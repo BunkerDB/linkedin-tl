@@ -1,0 +1,126 @@
+version: "3.8"
+
+services:
+  zookeeper:
+    image: debezium/zookeeper:${DEBEZIUM_VERSION}
+    ports:
+      - ${ZOOKEEPER_PORT_1}:2181
+      - ${ZOOKEEPER_PORT_2}:2888
+      - ${ZOOKEEPER_PORT_3}:3888
+    volumes:
+      - ${ZOOKEEPER_VOLUME_DATA}:/zookeeper/data
+      - ${ZOOKEEPER_VOLUME_TXNS}:/zookeeper/txns
+      - ${ZOOKEEPER_VOLUME_LOGS}:/zookeeper/logs
+      - ${ZOOKEEPER_VOLUME_CONF}:/zookeeper/conf
+    container_name: zookeeper
+
+  kafka:
+    image: debezium/kafka:${DEBEZIUM_VERSION}
+    ports:
+      - ${KAFKA_PORT}:9092
+    volumes:
+      - ${KAFKA_VOLUME_TOPIC_DATA}:/kafka/data
+      - ${KAFKA_VOLUME_LOGS}:/kafka/logs
+      - ${KAFKA_VOLUME_CONFIG}:/kafka/config
+    environment:
+      ZOOKEEPER_CONNECT: zookeeper:2181
+      ADVERTISED_HOST_NAME: ${KAFKA_ADVERTISED_HOST_NAME}
+    depends_on:
+      - zookeeper
+    container_name: kafka
+
+  db:
+    build:
+      context: .
+      dockerfile: ./docker/mysql/Dockerfile
+    ports:
+      - ${MYSQL_PORT}:3306
+    volumes:
+      - ${MYSQL_LOCAL_VOLUME}:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      #TODO:DB_CONTAINER_NAME
+    container_name: db
+
+  connect:
+    image: debezium/connect:${DEBEZIUM_VERSION}
+    ports:
+      - ${KAFKA_CONNECT_PORT}:8083
+    volumes:
+      - ${KAFKA_CONNECT_VOLUME_LOGS}:/kafka/logs
+      - ${KAFKA_CONNECT_VOLUME_CONFIG}:/kafka/config
+    environment:
+      BOOTSTRAP_SERVERS: kafka:9092
+      GROUP_ID: ${KAFKA_CONNECT_GROUP_ID}
+      CONFIG_STORAGE_TOPIC: ${KAFKA_CONNECT_CONFIG_STORAGE_TOPIC}
+      OFFSET_STORAGE_TOPIC: ${KAFKA_CONNECT_OFFSET_STORAGE_TOPIC}
+      STATUS_STORAGE_TOPIC: ${KAFKA_CONNECT_STATUS_STORAGE_TOPIC}
+    depends_on:
+      - zookeeper
+      - kafka
+      - db
+    container_name: connect
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - ${JAEGER_PORT_1}:5775/udp
+      - ${JAEGER_PORT_2}:6831/udp
+      - ${JAEGER_PORT_3}:6832/udp
+      - ${JAEGER_PORT_4}:5778
+      - ${JAEGER_PORT_5}:16686
+      - ${JAEGER_PORT_6}:14268
+      - ${JAEGER_PORT_7}:14250
+      - ${JAEGER_PORT_8}:9411
+    environment:
+      SPAN_STORAGE_TYPE: memory
+    container_name: jaeger
+
+  mongo:
+    image: mongo
+    restart: unless-stopped
+    ports:
+      - 27017:27017 #TODO:
+    volumes:
+      - ${MONGODB_LOCAL_VOLUME}:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root #TODO:
+      MONGO_INITDB_ROOT_PASSWORD: example #TODO:
+    container_name: mongo
+
+#  server:
+#    build:
+#      context: .
+#      dockerfile: ./docker/server/Dockerfile
+#    ports:
+#      - ${SERVER_PORT}:${SERVER_PORT}
+#    volumes:
+#      - ./src:/usr/src/app/src
+#      - ./prisma:/usr/src/app/prisma
+#      - ./.env:/usr/src/app/.env
+#      - ./package.json:/usr/src/app/package.json
+#      - ./package-lock.json:/usr/src/app/package-lock.json
+#    stdin_open: true
+#    tty: true
+#    container_name: server
+#
+#  handler:
+#    build:
+#      context: .
+#      dockerfile: ./docker/handler/Dockerfile
+#    volumes:
+#      - ./src:/usr/src/app/src
+#      - ./prisma:/usr/src/app/prisma
+#      - ./.env:/usr/src/app/.env
+#      - ./package.json:/usr/src/app/package.json
+#      - ./package-lock.json:/usr/src/app/package-lock.json
+#    stdin_open: true
+#    tty: true
+#    container_name: handler
+
+networks:
+  default:
+    driver: bridge
+    name: debezium_default
