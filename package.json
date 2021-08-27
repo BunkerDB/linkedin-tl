@@ -6,10 +6,10 @@
   "scripts": {
     "build": "npm run prisma:validate && npm run prisma:generate && npm run build:ts",
     "build:ts": "tsc",
-    "start": "concurrently -k -p \"[{name}]\" -n \"Ms:Task:WebServer,Ms:Task:00\" -c \"red.bold,green.bold,blue.bold,magenta.bold,cyan.bold,gray.bold\" \"npm run start:task:web\" \"npm run start:task:00\\",
+    "start": "concurrently -k -p \"[{name}]\" -n \"Ms:Task:WebServer,Ms:Task:00\" -c \"red.bold,green.bold,blue.bold,magenta.bold,cyan.bold,gray.bold\" \"npm run start:task:web\" \"npm run start:task:00\"",
     "start:task:web": "node dist/index.js",
     "start:task:00": "node dist/Application/EventHandler/Task00/handler.js",
-    "start-dev": "concurrently -k -p \"[{name}]\" -n \"Ms:Task:WebServer,Ms:Task:00\" -c \"red.bold,green.bold,blue.bold,magenta.bold,cyan.bold,gray.bold\" \"npm run watch:task:web\" \"npm run watch:task:00\\",
+    "start-dev": "concurrently -k -p \"[{name}]\" -n \"Ms:Task:WebServer,Ms:Task:00\" -c \"red.bold,green.bold,blue.bold,magenta.bold,cyan.bold,gray.bold\" \"npm run watch:task:web\" \"npm run watch:task:00\"",
     "start-dev:task:web": "ts-node src/index.ts",
     "start-dev:task:00": "ts-node src/Application/EventHandler/Task00/handler.ts",
     "watch:ts": "npx tsc -w",
@@ -64,6 +64,7 @@
     "moment": "^2.29.1",
     "mongodb": "^4.1.0",
     "opentracing": "^0.14.5",
+    "qs": "^6.10.1",
     "winston": "^3.3.3"
   }
 }

@@ -6,6 +6,7 @@ import { KafkaMessageTask00DTO } from "../../DTO/KafkaMessageTask00DTO";
 import { KafkaMessageTask00Mapper } from "../../Mappers/KafkaMessageTask00Mapper";
 import { Tracer, FORMAT_HTTP_HEADERS, SpanContext } from "opentracing";
 import { IoC } from "../../../Application/Dependencies";
+import { FactoryCQRSDataSocialConnection } from "../CQRS/FactoryCQRSDataSocialConnection";
 
 export class ServiceTask00 extends ServiceTaskBase<KafkaMessageTask00DTO, any> {
   constructor(args: { container: ContainerInterface }) {
@@ -19,9 +20,11 @@ export class ServiceTask00 extends ServiceTaskBase<KafkaMessageTask00DTO, any> {
   }
 
   protected doTask(): PromiseB<any> {
-    return PromiseB.try(() => {
-      //TODO:
-      return true;
+    console.log("[RAWDATAALLIN]", this.message.after);
+    return new FactoryCQRSDataSocialConnection({
+      container: this.container,
+    }).execute({
+      rawData: this.message.after,
     });
   }
 

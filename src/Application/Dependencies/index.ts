@@ -7,6 +7,7 @@ import { PrismaClientDBAL } from "../../Infrastructure/DBAL/PrismaClientDBAL";
 import { Http } from "../../Infrastructure/Http";
 import { HttpAttempt } from "../../Infrastructure/HttpAttempt";
 import { MongoDBClientDBAL } from "../../Infrastructure/DBAL/MongoDBClientDBAL";
+import { DataTablePostsMongoAdapter } from "../../Infrastructure/DBAL/DAO/DataTablePostsMongoAdapter";
 
 const IoC = {
   Settings: Symbol.for("Settings"),
@@ -16,6 +17,7 @@ const IoC = {
   PrismaClient: Symbol.for("PrismaClient"),
   MongoClient: Symbol.for("MongoClient"),
   HttpClient: Symbol.for("HttpClient"),
+  IDataTablePostsDAO: Symbol.for("IDataTablePostsDAO"),
 };
 
 const DependenciesManager = (containerBuilder: ContainerBuilder) => {
@@ -60,6 +62,14 @@ const DependenciesManager = (containerBuilder: ContainerBuilder) => {
           }),
           logger: container.get(IoC.LoggerInterface),
           maxAttempts: 5,
+        });
+      },
+    },
+    {
+      key: IoC.IDataTablePostsDAO,
+      value: (container: ContainerInterface) => {
+        return new DataTablePostsMongoAdapter({
+          adapter: container.get(IoC.MongoClient),
         });
       },
     },

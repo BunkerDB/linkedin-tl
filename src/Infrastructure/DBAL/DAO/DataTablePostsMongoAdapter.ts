@@ -1,0 +1,107 @@
+import PromiseB from "bluebird";
+import { IDataTablePostsDAO } from "../../../Domain/Interfaces/IDataTablePostsDAO";
+import {
+  Document,
+  Collection,
+  Filter,
+  MongoClient,
+  UpdateFilter,
+  UpdateOptions,
+} from "mongodb";
+import { DataTablePostsCreateInputDTO } from "../../../Domain/DTO/DataTablePostsCreateInputDTO";
+import { DataTablePostsDTO } from "../../../Domain/DTO/DataTablePostsDTO";
+import moment from "moment";
+
+export class DataTablePostsMongoAdapter implements IDataTablePostsDAO {
+  private readonly _collection: Collection;
+  private readonly _adapter: MongoClient;
+
+  constructor(args: { adapter: MongoClient }) {
+    this._adapter = args.adapter;
+    this._collection = this.adapter
+      .db("db_etl_linkedin_mongo")
+      .collection("posts");
+  }
+
+  get adapter(): MongoClient {
+    return this._adapter;
+  }
+
+  get collection(): Collection {
+    return this._collection;
+  }
+
+  upsert(args: { input: DataTablePostsCreateInputDTO }): PromiseB<boolean> {
+    return PromiseB.try(() => {
+      const query: Filter<Document> = {
+        externalId: args.input.externalId,
+        organizationId: args.input.organizationId,
+      };
+      const update: UpdateFilter<Document> | Partial<Document> = {
+        $set: {
+          dimension: args.input.dimension,
+          metrics: args.input.metrics,
+          lastModified: moment().format(),
+        },
+      };
+      const options: UpdateOptions = { upsert: true };
+
+      return this.collection.updateOne(query, update, options);
+    }).then((_) => {
+      return true;
+      //TODO: Mapper to DataTablePostsDTO?
+
+      // return new DataTablePostsMapper().execute({
+      //   rawData: model,
+      // });
+    });
+  }
+
+  read(args: {
+    instance: string;
+    organizationId: number;
+  }): PromiseB<DataTablePostsDTO[]> {
+    return PromiseB.try(() => {
+      return this.collection
+        .find({ instance: args.instance, organizationId: args.organizationId })
+        .toArray();
+    }).then((model: Document[]) => {
+      //TODO: Remove this validation if returns empty on not found
+      if (model === null) {
+        throw new Error("<model> not found");
+      }
+
+      return model as unknown as DataTablePostsDTO[];
+      //TODO: Mapper to DataTablePostsDTO
+
+      // return new DataTablePostsMapper().execute({
+      //   rawData: model,
+      // });
+    });
+  }
+
+  find(args: {
+    instance: string;
+    organizationId: number;
+    externalId: string;
+  }): PromiseB<DataTablePostsDTO> {
+    return PromiseB.try(() => {
+      return this.collection.findOne({
+        instance: args.instance,
+        organizationId: args.organizationId,
+      });
+    }).then((document: Document | undefined | null) => {
+      if (document === undefined || document === null) {
+        //TODO: throw Domain Error
+        throw new Error("<model> not found");
+      }
+      return document as unknown as DataTablePostsDTO;
+
+      //TODO: Mapper to DataTablePostsDTO
+
+      // return new DataTablePostsMapper().execute({
+      //   rawData: model,
+      // });
+    });
+  }
+}
