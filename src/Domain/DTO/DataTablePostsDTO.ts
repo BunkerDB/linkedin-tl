@@ -1,43 +1,45 @@
 export type DataTablePostsDTO = {
   _id: string;
-  instance: string;
-  organizationId: string;
-  externalId: string;
   dimension: DataTablePostsDimensionDTO;
-  lastModified: Date;
   metrics: DataTablePostsMetricsDTO;
+  lastModified: Date;
 };
-//TODO: Check for standard Metrics & Scope between Edges
-// & DataSocialConnectionMetricsDTO & DataSocialConnectionScopeDTO;
 
-export declare type DataTablePostsDimensionDTO = {
+export declare type DataTablePostsDimensionDTO =
+  DataTablePostsDimensionBaseDTO & {
+    assets: DataTablePostsDimensionAssetsDTO[];
+  };
+
+export declare type DataTablePostsDimensionBaseDTO = {
+  instance: string;
+  organizationId: number;
+  externalId: string;
   text: string;
   picture: string;
   pictureLarge: string;
   createdTime: Date;
   type: string;
   permalink: string;
-  assets: DataTablePostsDimensionAssetsDTO[];
 };
 
 export declare type DataTablePostsMetricsDTO = {
-  post_engaged_users: number;
-  post_impressions: number;
-  post_impressions_paid: number;
-  post_impressions_organic: number;
-  post_consumptions_unique: number;
-  post_consumptions: number;
-  //TODO: Check which metric of the RawData corresponds to each one
-  // uniqueImpressionsCount: number;
-  // shareCount: number;
-  // engagement: number;
-  // clickCount: number;
-  // likeCount: number;
-  // impressionCount: number;
-  // commentCount: number;
+  unique_impressions_count: number;
+  share_count: number;
+  engagement: number;
+  click_count: number;
+  like_count: number;
+  impression_count: number;
+  comment_count: number;
+  reaction_appreciation: number;
+  reaction_empathy: number;
+  reaction_interest: number;
+  reaction_like: number;
+  reaction_maybe: number;
+  reaction_praise: number;
+  video_views: number; //Video_Analytics
 };
 
-declare type DataTablePostsDimensionAssetsDTO = {
+export declare type DataTablePostsDimensionAssetsDTO = {
   type: string;
   src: string;
   link?: string | null;

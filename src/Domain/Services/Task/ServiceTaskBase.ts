@@ -83,6 +83,7 @@ export abstract class ServiceTaskBase<T, Q> {
         this.span.finish();
       })
       .catch((error: any) => {
+        console.log("[ERROR_BASE]", error);
         return this.handleError(error);
       });
   }

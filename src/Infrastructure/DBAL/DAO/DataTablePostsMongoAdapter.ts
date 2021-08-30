@@ -10,7 +10,6 @@ import {
 } from "mongodb";
 import { DataTablePostsCreateInputDTO } from "../../../Domain/DTO/DataTablePostsCreateInputDTO";
 import { DataTablePostsDTO } from "../../../Domain/DTO/DataTablePostsDTO";
-import moment from "moment";
 
 export class DataTablePostsMongoAdapter implements IDataTablePostsDAO {
   private readonly _collection: Collection;
@@ -34,14 +33,13 @@ export class DataTablePostsMongoAdapter implements IDataTablePostsDAO {
   upsert(args: { input: DataTablePostsCreateInputDTO }): PromiseB<boolean> {
     return PromiseB.try(() => {
       const query: Filter<Document> = {
-        externalId: args.input.externalId,
-        organizationId: args.input.organizationId,
+        externalId: args.input.dimension.externalId,
+        organizationId: args.input.dimension.organizationId,
       };
       const update: UpdateFilter<Document> | Partial<Document> = {
         $set: {
           dimension: args.input.dimension,
           metrics: args.input.metrics,
-          lastModified: moment().format(),
         },
       };
       const options: UpdateOptions = { upsert: true };
@@ -63,7 +61,10 @@ export class DataTablePostsMongoAdapter implements IDataTablePostsDAO {
   }): PromiseB<DataTablePostsDTO[]> {
     return PromiseB.try(() => {
       return this.collection
-        .find({ instance: args.instance, organizationId: args.organizationId })
+        .find({
+          "dimension.instance": args.instance,
+          "dimension.organizationId": args.organizationId,
+        })
         .toArray();
     }).then((model: Document[]) => {
       //TODO: Remove this validation if returns empty on not found
@@ -87,8 +88,9 @@ export class DataTablePostsMongoAdapter implements IDataTablePostsDAO {
   }): PromiseB<DataTablePostsDTO> {
     return PromiseB.try(() => {
       return this.collection.findOne({
-        instance: args.instance,
-        organizationId: args.organizationId,
+        "dimension.instance": args.instance,
+        "dimension.organizationId": args.organizationId,
+        "dimension.externalId": args.externalId,
       });
     }).then((document: Document | undefined | null) => {
       if (document === undefined || document === null) {

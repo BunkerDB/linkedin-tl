@@ -4,6 +4,7 @@ import { DataTablePostsCreateInputDTO } from "../../DTO/DataTablePostsCreateInpu
 import { IDataTablePostsDAO } from "../../Interfaces/IDataTablePostsDAO";
 import { LinkedInUgcPostsElementsDTO } from "../../../Infrastructure/DTO/LinkedInUgcPostsElementsDTO";
 import { ReportRawDataAllInAssetsDTO } from "../../DTO/ReportRawDataAllInAssetsDTO";
+import { ServiceCQRSTablePostsTransformMapper } from "../../Mappers/ServiceCQRSTablePostsTransformMapper";
 
 export class ServiceCQRSTablePosts {
   private readonly _adapter: IDataTablePostsDAO;
@@ -31,20 +32,31 @@ export class ServiceCQRSTablePosts {
       .data as unknown as LinkedInUgcPostsElementsDTO[];
     const assets: ReportRawDataAllInAssetsDTO[] = args.rawRow
       .assets as unknown as ReportRawDataAllInAssetsDTO[];
+
+    console.log("[ASSETS]", assets);
+
     return PromiseB.try(() => {
-      //TODO: Remove this when use constant
-      console.log("[ASSETS]", assets);
-      const actionTransformTablePosts = PromiseB.map(
-        rawRows,
-        (rawRow: LinkedInUgcPostsElementsDTO) => {
-          //TODO: Find assets and return mapped CreateInput (Mapper?)
-          return rawRow;
+      const actionTransformTablePosts: PromiseB<
+        DataTablePostsCreateInputDTO[]
+      > = PromiseB.map(rawRows, (rawRow: LinkedInUgcPostsElementsDTO) => {
+        const assetsPost: ReportRawDataAllInAssetsDTO =
+          (assets.find((asset: ReportRawDataAllInAssetsDTO) => {
+            return asset.externalId === rawRow.id;
+          }) as ReportRawDataAllInAssetsDTO) ?? [];
+        return new ServiceCQRSTablePostsTransformMapper().execute({
+          instance: args.rawRow.instance,
+          organizationId: args.rawRow.organization,
+          post: rawRow,
+          assets: assetsPost,
+        });
+      });
+
+      return PromiseB.all(actionTransformTablePosts).then(
+        (result: DataTablePostsCreateInputDTO[]) => {
+          console.log("[TRANSFORMED_POSTS]", result);
+          return result;
         }
       );
-
-      return PromiseB.all(actionTransformTablePosts).then((result) => {
-        return result as unknown as DataTablePostsCreateInputDTO[];
-      });
     });
   }
 
