@@ -12,14 +12,12 @@ import { DataTablePostsCreateInputDTO } from "../../../Domain/DTO/DataTablePosts
 import { DataTablePostsDTO } from "../../../Domain/DTO/DataTablePostsDTO";
 
 export class DataTablePostsMongoAdapter implements IDataTablePostsDAO {
-  private readonly _collection: Collection;
+  private _collection: Collection | undefined;
   private readonly _adapter: MongoClient;
 
   constructor(args: { adapter: MongoClient }) {
     this._adapter = args.adapter;
-    this._collection = this.adapter
-      .db("db_etl_linkedin_mongo")
-      .collection("posts");
+    this.getConnection();
   }
 
   get adapter(): MongoClient {
@@ -27,7 +25,19 @@ export class DataTablePostsMongoAdapter implements IDataTablePostsDAO {
   }
 
   get collection(): Collection {
-    return this._collection;
+    return <Collection>this._collection;
+  }
+
+  set collection(value: Collection) {
+    this._collection = value;
+  }
+
+  private getConnection(): void {
+    PromiseB.try(() => {
+      return this.adapter.connect();
+    }).then((client: MongoClient) => {
+      this.collection = client.db("db_etl_linkedin_mongo").collection("posts");
+    });
   }
 
   upsert(args: { input: DataTablePostsCreateInputDTO }): PromiseB<boolean> {

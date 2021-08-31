@@ -1,5 +1,6 @@
 import { ElementEdge } from "../Types/ElementEdge";
 import { JsonValue } from "../Types/JsonValue";
+import { ReportRawDataAllInAssetsDTO } from "./ReportRawDataAllInAssetsDTO";
 
 export type ReportRawDataAllInDTO = {
   instance: string;
@@ -7,9 +8,9 @@ export type ReportRawDataAllInDTO = {
   startDate: Date;
   endDate: Date;
   edge: ElementEdge;
-  dimensions: { [key in string]?: JsonValue } | null;
-  assets: { [key in string]?: JsonValue } | null;
-  data: { [key in string]?: JsonValue };
+  dimensions: { [key in string]?: JsonValue }[] | null;
+  assets: ReportRawDataAllInAssetsDTO[] | []; //TODO: Check this
+  data: { [key in string]?: JsonValue }[];
   createdAt: Date;
   updatedAt: Date;
   updatedCount: number;

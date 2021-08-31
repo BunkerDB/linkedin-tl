@@ -1,12 +1,12 @@
 import PromiseB from "bluebird";
-import { Kafka, EachMessagePayload } from "kafkajs";
+import { Kafka, EachBatchPayload, KafkaMessage } from "kafkajs";
 import { ContainerBuilder } from "../../Container/ContainerBuilder";
 import { SettingsInterface, SettingsManager } from "../../Setting";
 import { IoC, DependenciesManager } from "../../Dependencies";
 import { ContainerInterface } from "../../Interface/ContainerInterface";
 import { LoggerInterface } from "../../../Infrastructure/Interface/LoggerInterface";
-import { ServiceTask00 } from "../../../Domain/Services/Task/ServiceTask00";
 import { initTracer, TracingConfig, TracingOptions } from "jaeger-client";
+import { ServiceTask00 } from "../../../Domain/Services/Task/ServiceTask00";
 
 //SET-UP CONTAINER
 const containerBuilder = new ContainerBuilder();
@@ -38,9 +38,7 @@ containerBuilder.addDefinitions([
       };
       const options: TracingOptions = {
         logger: {
-          info(msg: string) {
-            _logger.info({ message: msg });
-          },
+          info(_: string) {},
           error(msg: string) {
             _logger.error({ error: msg });
           },
@@ -57,7 +55,6 @@ const container: ContainerInterface = containerBuilder.build();
 const logger: LoggerInterface = container.get(IoC.LoggerInterface);
 
 const kafka: Kafka = container.get(IoC.Kafka);
-
 const topic: string = container.get(IoC.Settings).CONSUMER_SUBSCRIBE_TOPIC_00;
 
 const consumer = kafka.consumer({
@@ -69,20 +66,40 @@ const consumer = kafka.consumer({
 
 const run = async () => {
   await consumer.connect();
-  await consumer.subscribe({ topic: topic, fromBeginning: true });
+  await consumer.subscribe({ topic: topic });
   await consumer.run({
-    partitionsConsumedConcurrently: container.get(IoC.Settings)
-      .CONSUMER_RUN_PARTITIONS_TOPIC_00,
-    eachMessage: async (payload: EachMessagePayload): Promise<void> => {
-      return PromiseB.try(() => {
-        return new ServiceTask00({
-          container: container,
-        }).execute({
-          kafkaMessage: payload.message,
-        });
-      }).catch((error) => {
-        logger.error(error);
+    eachBatch: (payload: EachBatchPayload): Promise<void> => {
+      logger.info({
+        topic: payload.batch.topic,
+        partition: payload.batch.partition,
+        countOfMessage: payload.batch.messages.length,
       });
+      const actions = PromiseB.map(
+        payload.batch.messages,
+        (message: KafkaMessage) => {
+          return PromiseB.try(() => {
+            return new ServiceTask00({
+              container: container,
+            }).execute({
+              kafkaMessage: message,
+            });
+          }).catch((error) => {
+            logger.error(error);
+            return;
+          });
+        },
+        {
+          concurrency: 10,
+        }
+      );
+      return PromiseB.all(actions)
+        .then(() => {
+          return;
+        })
+        .catch((error) => {
+          logger.error(error);
+          return;
+        });
     },
   });
 };
@@ -99,7 +116,8 @@ errorTypes.map((type: string) => {
       logger.error(e);
       await consumer.disconnect();
       process.exit(0);
-    } catch (_) {
+    } catch (err) {
+      logger.error(err);
       process.exit(1);
     }
   });

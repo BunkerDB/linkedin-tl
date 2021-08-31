@@ -9,17 +9,20 @@ export declare type LinkedInSocialMetadataResultsDTO = {
 };
 
 export declare type LinkedInSocialMetadataResultsReactionsDTO = {
-  reactionSummaries: LinkedInSocialMetadataResultsReactionsReactionSummariesDTO;
+  reactionSummaries:
+    | LinkedInSocialMetadataResultsReactionsReactionSummariesDTO
+    | undefined;
   commentsState: string;
   entity: string;
   commentSummary: LinkedInSocialMetadataResultsReactionsCommentSummaryDTO;
 };
 
-declare type LinkedInSocialMetadataResultsReactionsReactionSummariesDTO = {
-  [
-    key: string
-  ]: LinkedInSocialMetadataResultsReactionsReactionSummariesDetailsDTO;
-};
+export declare type LinkedInSocialMetadataResultsReactionsReactionSummariesDTO =
+  {
+    [
+      key: string
+    ]: LinkedInSocialMetadataResultsReactionsReactionSummariesDetailsDTO;
+  };
 
 declare type LinkedInSocialMetadataResultsReactionsReactionSummariesDetailsDTO =
   {

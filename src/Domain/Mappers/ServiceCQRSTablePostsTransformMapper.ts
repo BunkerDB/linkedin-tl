@@ -7,9 +7,13 @@ import {
   DataTablePostsDimensionDTO,
   DataTablePostsMetricsDTO,
 } from "../DTO/DataTablePostsDTO";
-import { LinkedInSocialMetadataResultsReactionsDTO } from "../../Infrastructure/DTO/LinkedInSocialMetadataDTO";
+import {
+  LinkedInSocialMetadataResultsReactionsDTO,
+  LinkedInSocialMetadataResultsReactionsReactionSummariesDTO,
+} from "../../Infrastructure/DTO/LinkedInSocialMetadataDTO";
 import { LinkedInMediaDataContentEntitiesDTO } from "../../Infrastructure/DTO/LinkedInMediaDataDTO";
 import { LinkedInUgcPostsElementsDTO } from "../../Infrastructure/DTO/LinkedInUgcPostsElementsDTO";
+import moment from "moment";
 
 declare type TablePostsTransformReactionsDTO = {
   reaction_appreciation: number;
@@ -141,7 +145,7 @@ export class ServiceCQRSTablePostsTransformMapper {
         text: args.assets.media?.text ?? "",
         picture: args.assets.media?.picture ?? "",
         pictureLarge: args.assets.media?.picture ?? "", //TODO:
-        createdTime: new Date(), //TODO:
+        createdTime: new Date(moment(args.post.firstPublishedAt).format()),
         type: args.post.specificContent["com.linkedin.ugc.ShareContent"]
           ?.shareMediaCategory,
         permalink: args.assets.media?.permalinkUrl ?? "",
@@ -160,7 +164,7 @@ export class ServiceCQRSTablePostsTransformMapper {
             type: asset.type,
             src: asset.url,
             link: null,
-            title: null,
+            title: args.postAssets.media?.title,
           } as DataTablePostsDimensionAssetsDTO;
         }
       );
@@ -176,18 +180,28 @@ export class ServiceCQRSTablePostsTransformMapper {
     reactionsRaw: LinkedInSocialMetadataResultsReactionsDTO;
   }): PromiseB<TablePostsTransformReactionsDTO> {
     return PromiseB.try(() => {
+      const reactionSummaries:
+        | LinkedInSocialMetadataResultsReactionsReactionSummariesDTO
+        | undefined = args.reactionsRaw.reactionSummaries;
       return {
-        reaction_appreciation:
-          args.reactionsRaw.reactionSummaries["APPRECIATION"]?.count ?? 0,
-        reaction_empathy:
-          args.reactionsRaw.reactionSummaries["EMPATHY"]?.count ?? 0,
-        reaction_interest:
-          args.reactionsRaw.reactionSummaries["INTEREST"]?.count ?? 0,
-        reaction_like: args.reactionsRaw.reactionSummaries["LIKE"]?.count ?? 0,
-        reaction_maybe:
-          args.reactionsRaw.reactionSummaries["MAYBE"]?.count ?? 0,
-        reaction_praise:
-          args.reactionsRaw.reactionSummaries["PRAISE"]?.count ?? 0,
+        reaction_appreciation: reactionSummaries
+          ? reactionSummaries["APPRECIATION"]?.count ?? 0
+          : 0,
+        reaction_empathy: reactionSummaries
+          ? reactionSummaries["EMPATHY"]?.count ?? 0
+          : 0,
+        reaction_interest: reactionSummaries
+          ? reactionSummaries["INTEREST"]?.count ?? 0
+          : 0,
+        reaction_like: reactionSummaries
+          ? reactionSummaries["LIKE"]?.count ?? 0
+          : 0,
+        reaction_maybe: reactionSummaries
+          ? reactionSummaries["MAYBE"]?.count ?? 0
+          : 0,
+        reaction_praise: reactionSummaries
+          ? reactionSummaries["PRAISE"]?.count ?? 0
+          : 0,
       };
     });
   }

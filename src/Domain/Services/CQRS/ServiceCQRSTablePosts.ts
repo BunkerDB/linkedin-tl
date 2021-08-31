@@ -30,15 +30,15 @@ export class ServiceCQRSTablePosts {
   }): PromiseB<DataTablePostsCreateInputDTO[]> {
     const rawRows: LinkedInUgcPostsElementsDTO[] = args.rawRow
       .data as unknown as LinkedInUgcPostsElementsDTO[];
-    const assets: ReportRawDataAllInAssetsDTO[] = args.rawRow
-      .assets as unknown as ReportRawDataAllInAssetsDTO[];
-
-    console.log("[ASSETS]", assets);
+    const assets: ReportRawDataAllInAssetsDTO[] = JSON.parse(
+      args.rawRow.assets as unknown as string
+    ); //TODO: Check why array of assets is parsed as <string>
 
     return PromiseB.try(() => {
       const actionTransformTablePosts: PromiseB<
         DataTablePostsCreateInputDTO[]
       > = PromiseB.map(rawRows, (rawRow: LinkedInUgcPostsElementsDTO) => {
+        // console.log("[TYPE_ASSETS]", typeof assets, "[ASSETS]", assets);
         const assetsPost: ReportRawDataAllInAssetsDTO =
           (assets.find((asset: ReportRawDataAllInAssetsDTO) => {
             return asset.externalId === rawRow.id;
@@ -53,7 +53,7 @@ export class ServiceCQRSTablePosts {
 
       return PromiseB.all(actionTransformTablePosts).then(
         (result: DataTablePostsCreateInputDTO[]) => {
-          console.log("[TRANSFORMED_POSTS]", result);
+          console.log("[TRANSFORMED_DATA]", result);
           return result;
         }
       );
