@@ -22,7 +22,7 @@ export class DataTablePostsDAO implements IDataTablePostsDAO {
 
   read(args: {
     instance: string;
-    organizationId: number;
+    externalAccountId: number;
   }): PromiseB<DataTablePostsDTO[]> {
     return PromiseB.try(() => {
       return this.adapter.read(args);
@@ -31,8 +31,8 @@ export class DataTablePostsDAO implements IDataTablePostsDAO {
 
   find(args: {
     instance: string;
-    organizationId: number;
-    externalId: string;
+    externalAccountId: number;
+    externalMediaId: string;
   }): PromiseB<DataTablePostsDTO> {
     return PromiseB.try(() => {
       return this.adapter.find(args);

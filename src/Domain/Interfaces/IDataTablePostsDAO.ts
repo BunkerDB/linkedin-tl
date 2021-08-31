@@ -7,14 +7,14 @@ export interface IDataTablePostsDAO {
 
   read(args: {
     instance: string;
-    organizationId: number;
+    externalAccountId: number;
     //TODO: query: QueryableDTO;
   }): PromiseB<DataTablePostsDTO[]>;
 
   find(args: {
     instance: string;
-    organizationId: number;
-    externalId: string;
+    externalAccountId: number;
+    externalMediaId: string;
   }): PromiseB<DataTablePostsDTO>;
 
   //TODO: Check this

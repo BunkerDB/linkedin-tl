@@ -20,7 +20,7 @@ export class ServiceTask00 extends ServiceTaskBase<KafkaMessageTask00DTO, any> {
   }
 
   protected doTask(): PromiseB<any> {
-    console.log("[RAWDATAALLIN]", this.message.after);
+    //console.log("[RAWDATAALLIN]", this.message.after);
     return new FactoryCQRSDataSocialConnection({
       container: this.container,
     }).execute({

@@ -12,8 +12,8 @@ export declare type DataTablePostsDimensionDTO =
 
 export declare type DataTablePostsDimensionBaseDTO = {
   instance: string;
-  organizationId: number;
-  externalId: string;
+  externalAccountId: number;
+  externalMediaId: string;
   text: string;
   picture: string;
   pictureLarge: string;

@@ -44,14 +44,15 @@ export class DataTablePostsMongoAdapter implements IDataTablePostsDAO {
     return PromiseB.try(() => {
       const query: Filter<Document> = {
         "dimension.instance": args.input.dimension.instance,
-        "dimension.externalId": args.input.dimension.externalId,
-        "dimension.organizationId": args.input.dimension.organizationId,
+        "dimension.externalMediaId": args.input.dimension.externalMediaId,
+        "dimension.externalAccountId": args.input.dimension.externalAccountId,
       };
       const update: UpdateFilter<Document> | Partial<Document> = {
         $set: {
           dimension: args.input.dimension,
           metrics: args.input.metrics,
         },
+        $currentDate: { lastModified: true },
       };
       const options: UpdateOptions = { upsert: true };
 
@@ -68,13 +69,13 @@ export class DataTablePostsMongoAdapter implements IDataTablePostsDAO {
 
   read(args: {
     instance: string;
-    organizationId: number;
+    externalAccountId: number;
   }): PromiseB<DataTablePostsDTO[]> {
     return PromiseB.try(() => {
       return this.collection
         .find({
           "dimension.instance": args.instance,
-          "dimension.organizationId": args.organizationId,
+          "dimension.externalAccountId": args.externalAccountId,
         })
         .toArray();
     }).then((model: Document[]) => {
@@ -94,14 +95,14 @@ export class DataTablePostsMongoAdapter implements IDataTablePostsDAO {
 
   find(args: {
     instance: string;
-    organizationId: number;
-    externalId: string;
+    externalAccountId: number;
+    externalMediaId: string;
   }): PromiseB<DataTablePostsDTO> {
     return PromiseB.try(() => {
       return this.collection.findOne({
         "dimension.instance": args.instance,
-        "dimension.organizationId": args.organizationId,
-        "dimension.externalId": args.externalId,
+        "dimension.externalAccountId": args.externalAccountId,
+        "dimension.externalMediaId": args.externalMediaId,
       });
     }).then((document: Document | undefined | null) => {
       if (document === undefined || document === null) {

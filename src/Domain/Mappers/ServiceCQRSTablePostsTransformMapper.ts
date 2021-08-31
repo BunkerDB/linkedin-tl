@@ -27,7 +27,7 @@ declare type TablePostsTransformReactionsDTO = {
 export class ServiceCQRSTablePostsTransformMapper {
   execute(args: {
     instance: string;
-    organizationId: number;
+    externalAccountId: number;
     post: LinkedInUgcPostsElementsDTO;
     assets: ReportRawDataAllInAssetsDTO;
   }): PromiseB<DataTablePostsCreateInputDTO> {
@@ -51,7 +51,7 @@ export class ServiceCQRSTablePostsTransformMapper {
 
   private transformDimension(args: {
     instance: string;
-    organizationId: number;
+    externalAccountId: number;
     post: LinkedInUgcPostsElementsDTO;
     assets: ReportRawDataAllInAssetsDTO;
   }): PromiseB<DataTablePostsDimensionDTO> {
@@ -74,8 +74,8 @@ export class ServiceCQRSTablePostsTransformMapper {
       ) => {
         return {
           instance: result[0].instance,
-          organizationId: result[0].organizationId,
-          externalId: result[0].externalId,
+          externalAccountId: result[0].externalAccountId,
+          externalMediaId: result[0].externalMediaId,
           text: result[0].text,
           picture: result[0].picture,
           pictureLarge: result[0].pictureLarge,
@@ -133,15 +133,15 @@ export class ServiceCQRSTablePostsTransformMapper {
 
   private transformDimensionBase(args: {
     instance: string;
-    organizationId: number;
+    externalAccountId: number;
     post: LinkedInUgcPostsElementsDTO;
     assets: ReportRawDataAllInAssetsDTO;
   }): PromiseB<DataTablePostsDimensionBaseDTO> {
     return PromiseB.try(() => {
       return {
         instance: args.instance,
-        organizationId: args.organizationId,
-        externalId: args.post.id,
+        externalAccountId: args.externalAccountId,
+        externalMediaId: args.post.id,
         text: args.assets.media?.text ?? "",
         picture: args.assets.media?.picture ?? "",
         pictureLarge: args.assets.media?.picture ?? "", //TODO:

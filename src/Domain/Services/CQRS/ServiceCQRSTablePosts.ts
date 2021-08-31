@@ -38,14 +38,13 @@ export class ServiceCQRSTablePosts {
       const actionTransformTablePosts: PromiseB<
         DataTablePostsCreateInputDTO[]
       > = PromiseB.map(rawRows, (rawRow: LinkedInUgcPostsElementsDTO) => {
-        // console.log("[TYPE_ASSETS]", typeof assets, "[ASSETS]", assets);
         const assetsPost: ReportRawDataAllInAssetsDTO =
           (assets.find((asset: ReportRawDataAllInAssetsDTO) => {
             return asset.externalId === rawRow.id;
           }) as ReportRawDataAllInAssetsDTO) ?? [];
         return new ServiceCQRSTablePostsTransformMapper().execute({
           instance: args.rawRow.instance,
-          organizationId: args.rawRow.organization,
+          externalAccountId: args.rawRow.organization,
           post: rawRow,
           assets: assetsPost,
         });
@@ -53,7 +52,7 @@ export class ServiceCQRSTablePosts {
 
       return PromiseB.all(actionTransformTablePosts).then(
         (result: DataTablePostsCreateInputDTO[]) => {
-          console.log("[TRANSFORMED_DATA]", result);
+          // console.log("[TRANSFORMED_DATA]", result);
           return result;
         }
       );
