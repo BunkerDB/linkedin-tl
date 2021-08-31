@@ -43,8 +43,9 @@ export class DataTablePostsMongoAdapter implements IDataTablePostsDAO {
   upsert(args: { input: DataTablePostsCreateInputDTO }): PromiseB<boolean> {
     return PromiseB.try(() => {
       const query: Filter<Document> = {
-        externalId: args.input.dimension.externalId,
-        organizationId: args.input.dimension.organizationId,
+        "dimension.instance": args.input.dimension.instance,
+        "dimension.externalId": args.input.dimension.externalId,
+        "dimension.organizationId": args.input.dimension.organizationId,
       };
       const update: UpdateFilter<Document> | Partial<Document> = {
         $set: {
