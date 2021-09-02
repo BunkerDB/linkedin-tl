@@ -3,21 +3,21 @@ import { ContainerBuilder } from "../Container/ContainerBuilder";
 import { Kafka, logLevel } from "kafkajs";
 import { SettingsInterface } from "../Setting";
 import { WinstonLoggerInstance } from "../../Infrastructure/Logger/WinstonLogger";
-import { PrismaClientDBAL } from "../../Infrastructure/DBAL/PrismaClientDBAL";
 import { Http } from "../../Infrastructure/Http";
 import { HttpAttempt } from "../../Infrastructure/HttpAttempt";
 import { MongoDBClientDBAL } from "../../Infrastructure/DBAL/MongoDBClientDBAL";
-import { DataTablePostsMongoAdapter } from "../../Infrastructure/DBAL/DAO/DataTablePostsMongoAdapter";
+import { DataPostsMongoAdapter } from "../../Infrastructure/DBAL/DAO/DataPostsMongoAdapter";
+import { DataGraphsDataMongoAdapter } from "../../Infrastructure/DBAL/DAO/DataGraphsDataMongoAdapter";
 
 const IoC = {
   Settings: Symbol.for("Settings"),
   Tracer: Symbol.for("Tracer"),
   LoggerInterface: Symbol.for("LoggerInterface"),
   Kafka: Symbol.for("Kafka"),
-  PrismaClient: Symbol.for("PrismaClient"),
   MongoClient: Symbol.for("MongoClient"),
   HttpClient: Symbol.for("HttpClient"),
-  IDataTablePostsDAO: Symbol.for("IDataTablePostsDAO"),
+  IDataPostsDAO: Symbol.for("IDataPostsDAO"),
+  IDataGraphsDataDAO: Symbol.for("IDataGraphsDataDAO"),
 };
 
 const DependenciesManager = (containerBuilder: ContainerBuilder) => {
@@ -41,12 +41,6 @@ const DependenciesManager = (containerBuilder: ContainerBuilder) => {
       },
     },
     {
-      key: IoC.PrismaClient,
-      value: (_: ContainerInterface) => {
-        return PrismaClientDBAL.getInstance();
-      },
-    },
-    {
       key: IoC.MongoClient,
       value: (container: ContainerInterface) => {
         const settings: SettingsInterface = container.get(IoC.Settings);
@@ -66,9 +60,17 @@ const DependenciesManager = (containerBuilder: ContainerBuilder) => {
       },
     },
     {
-      key: IoC.IDataTablePostsDAO,
+      key: IoC.IDataPostsDAO,
       value: (container: ContainerInterface) => {
-        return new DataTablePostsMongoAdapter({
+        return new DataPostsMongoAdapter({
+          adapter: container.get(IoC.MongoClient),
+        });
+      },
+    },
+    {
+      key: IoC.IDataGraphsDataDAO,
+      value: (container: ContainerInterface) => {
+        return new DataGraphsDataMongoAdapter({
           adapter: container.get(IoC.MongoClient),
         });
       },

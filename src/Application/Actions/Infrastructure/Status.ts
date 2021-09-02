@@ -5,7 +5,6 @@ import { ContainerInterface } from "../../Interface/ContainerInterface";
 import { Span } from "opentracing";
 import { GroupOverview, ITopicMetadata, Kafka, SeekEntry } from "kafkajs";
 import { IoC } from "../../Dependencies";
-import { PrismaClient } from "@prisma/client";
 import { Document, ListDatabasesResult, MongoClient } from "mongodb";
 
 export class Status extends ActionBase {
@@ -18,42 +17,18 @@ export class Status extends ActionBase {
     span: Span;
   }): PromiseB<any> {
     return PromiseB.try(() => {
-      const actionDBStatus = this.getDBStatus();
       const actionKafkaStatus = this.getKafkaStatus();
       const actionDBMongoStatus = this.getDBMongoStatus();
 
-      return PromiseB.all([
-        actionDBStatus,
-        actionKafkaStatus,
-        actionDBMongoStatus,
-      ]).then((result) => {
-        return {
-          db: result[0],
-          kafka: result[1],
-          mongo: result[2],
-        };
-      });
+      return PromiseB.all([actionKafkaStatus, actionDBMongoStatus]).then(
+        (result) => {
+          return {
+            kafka: result[0],
+            mongo: result[1],
+          };
+        }
+      );
     });
-  }
-
-  private getDBStatus(): PromiseB<any> {
-    const prisma: PrismaClient = this.container.get(IoC.PrismaClient);
-
-    const actionUserStatus: Promise<number> = prisma.example.count();
-
-    return PromiseB.all([actionUserStatus])
-      .then((result) => {
-        return {
-          status: true,
-          example: result[0],
-        };
-      })
-      .catch((e) => {
-        return {
-          status: false,
-          error: e.message ? e.message : e,
-        };
-      });
   }
 
   private getKafkaStatus(): PromiseB<any> {
@@ -100,7 +75,6 @@ export class Status extends ActionBase {
       return this.container.get(IoC.MongoClient).connect();
     })
       .then((client: MongoClient) => {
-        //TODO:
         const actionListDatabases: Promise<ListDatabasesResult> = client
           .db()
           .admin()
@@ -112,15 +86,40 @@ export class Status extends ActionBase {
           .find({})
           .toArray();
 
-        return PromiseB.all([actionListDatabases, actionFindPostsRows]).then(
-          (result) => {
-            return {
-              status: true,
-              databases: result[0],
-              posts: result[1],
-            };
-          }
-        );
+        const actionFindDataRows: Promise<Document[]> = client
+          .db("db_etl_linkedin_mongo")
+          .collection("graphs_data")
+          .find({})
+          .toArray();
+
+        const actionFindDemographicRows: Promise<Document[]> = client
+          .db("db_etl_linkedin_mongo")
+          .collection("graphs_demographic")
+          .find({})
+          .toArray();
+
+        const actionFindDemographicPeriodRows: Promise<Document[]> = client
+          .db("db_etl_linkedin_mongo")
+          .collection("graphs_demographic_period")
+          .find({})
+          .toArray();
+
+        return PromiseB.all([
+          actionListDatabases,
+          actionFindPostsRows,
+          actionFindDataRows,
+          actionFindDemographicRows,
+          actionFindDemographicPeriodRows,
+        ]).then((result) => {
+          return {
+            status: true,
+            posts: result[1],
+            graphs_data: result[2],
+            graphs_demographic: result[3],
+            graphs_demographic_period: result[4],
+            databases: result[0],
+          };
+        });
       })
       .catch((e) => {
         return {
@@ -134,17 +133,7 @@ export class Status extends ActionBase {
     const kafka: Kafka = this.container.get(IoC.Kafka);
     return PromiseB.try(() => {
       return kafka.admin().fetchTopicMetadata({
-        topics: [
-          this.container.get(IoC.Settings).CONSUMER_SUBSCRIBE_TOPIC_00,
-          this.container.get(IoC.Settings).CONSUMER_SUBSCRIBE_TOPIC_01,
-          this.container.get(IoC.Settings).CONSUMER_SUBSCRIBE_TOPIC_02,
-          this.container.get(IoC.Settings).CONSUMER_SUBSCRIBE_TOPIC_03,
-          this.container.get(IoC.Settings).CONSUMER_SUBSCRIBE_TOPIC_04,
-          this.container.get(IoC.Settings).CONSUMER_SUBSCRIBE_TOPIC_05,
-          // this.container.get(IoC.Settings).CONSUMER_SUBSCRIBE_TOPIC_10_0,
-          // this.container.get(IoC.Settings).CONSUMER_SUBSCRIBE_TOPIC_10_1,
-          this.container.get(IoC.Settings).CONSUMER_SUBSCRIBE_TOPIC_11,
-        ],
+        topics: [this.container.get(IoC.Settings).CONSUMER_SUBSCRIBE_TOPIC_00],
       });
     }).then((result) => {
       return result.topics;
@@ -163,38 +152,6 @@ export class Status extends ActionBase {
       {
         topic: this.container.get(IoC.Settings).CONSUMER_SUBSCRIBE_TOPIC_00,
         groupId: this.container.get(IoC.Settings).CONSUMER_GROUP_ID_TOPIC_00,
-      },
-      {
-        topic: this.container.get(IoC.Settings).CONSUMER_SUBSCRIBE_TOPIC_01,
-        groupId: this.container.get(IoC.Settings).CONSUMER_GROUP_ID_TOPIC_01,
-      },
-      {
-        topic: this.container.get(IoC.Settings).CONSUMER_SUBSCRIBE_TOPIC_02,
-        groupId: this.container.get(IoC.Settings).CONSUMER_GROUP_ID_TOPIC_02,
-      },
-      {
-        topic: this.container.get(IoC.Settings).CONSUMER_SUBSCRIBE_TOPIC_03,
-        groupId: this.container.get(IoC.Settings).CONSUMER_GROUP_ID_TOPIC_03,
-      },
-      {
-        topic: this.container.get(IoC.Settings).CONSUMER_SUBSCRIBE_TOPIC_04,
-        groupId: this.container.get(IoC.Settings).CONSUMER_GROUP_ID_TOPIC_04,
-      },
-      {
-        topic: this.container.get(IoC.Settings).CONSUMER_SUBSCRIBE_TOPIC_05,
-        groupId: this.container.get(IoC.Settings).CONSUMER_GROUP_ID_TOPIC_05,
-      },
-      // {
-      //   topic: this.container.get(IoC.Settings).CONSUMER_SUBSCRIBE_TOPIC_10_0,
-      //   groupId: this.container.get(IoC.Settings).CONSUMER_GROUP_ID_TOPIC_10,
-      // },
-      // {
-      //   topic: this.container.get(IoC.Settings).CONSUMER_SUBSCRIBE_TOPIC_10_1,
-      //   groupId: this.container.get(IoC.Settings).CONSUMER_GROUP_ID_TOPIC_10,
-      // },
-      {
-        topic: this.container.get(IoC.Settings).CONSUMER_SUBSCRIBE_TOPIC_11,
-        groupId: this.container.get(IoC.Settings).CONSUMER_GROUP_ID_TOPIC_11,
       },
     ];
 

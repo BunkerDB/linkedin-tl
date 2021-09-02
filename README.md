@@ -21,18 +21,16 @@
 
 7. _Instalar dependencias:_ `npm install`
 
-8. _Crear estructura de DB/Migracion:_ `npm run db:create`
-
-9. _Ejecutar el Server y los Tasks_ (Leer scripts en package.json para mas opciones):
+8. _Ejecutar el Server y los Tasks_ (Leer scripts en package.json para mas opciones):
 
    `npm run watch:task:web` (Server)
 
    `npm run watch:task:00` (Primer Tarea)
 
-10. _Chequear que el MS este corriendo correctamente, mediante los endpoints `/ping` y `/status`._
-    `GET http://localhost:5001/ping`
+9. _Chequear que el MS este corriendo correctamente, mediante los endpoints `/ping` y `/status`._
+   `GET http://localhost:5001/ping`
 
-    `GET http://localhost:5001/status`
+   `GET http://localhost:5001/status`
 
 ---
 

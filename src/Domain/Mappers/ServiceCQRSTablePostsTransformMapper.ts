@@ -1,12 +1,12 @@
 import { ReportRawDataAllInAssetsDTO } from "../DTO/ReportRawDataAllInAssetsDTO";
 import PromiseB from "bluebird";
-import { DataTablePostsCreateInputDTO } from "../DTO/DataTablePostsCreateInputDTO";
+import { DataPostsCreateInputDTO } from "../DTO/DataPostsCreateInputDTO";
 import {
-  DataTablePostsDimensionAssetsDTO,
-  DataTablePostsDimensionBaseDTO,
-  DataTablePostsDimensionDTO,
-  DataTablePostsMetricsDTO,
-} from "../DTO/DataTablePostsDTO";
+  DataPostsDimensionAssetsDTO,
+  DataPostsDimensionBaseDTO,
+  DataPostsDimensionDTO,
+  DataPostsMetricsDTO,
+} from "../DTO/DataPostsDTO";
 import {
   LinkedInSocialMetadataResultsReactionsDTO,
   LinkedInSocialMetadataResultsReactionsReactionSummariesDTO,
@@ -30,23 +30,21 @@ export class ServiceCQRSTablePostsTransformMapper {
     externalAccountId: number;
     post: LinkedInUgcPostsElementsDTO;
     assets: ReportRawDataAllInAssetsDTO;
-  }): PromiseB<DataTablePostsCreateInputDTO> {
-    const actionTransformDimension: PromiseB<DataTablePostsDimensionDTO> =
+  }): PromiseB<DataPostsCreateInputDTO> {
+    const actionTransformDimension: PromiseB<DataPostsDimensionDTO> =
       this.transformDimension(args);
-    const actionTransformMetrics: PromiseB<DataTablePostsMetricsDTO> =
+    const actionTransformMetrics: PromiseB<DataPostsMetricsDTO> =
       this.transformMetrics({ assets: args.assets });
 
     return PromiseB.all([
       actionTransformDimension,
       actionTransformMetrics,
-    ]).then(
-      (result: [DataTablePostsDimensionDTO, DataTablePostsMetricsDTO]) => {
-        return {
-          dimension: result[0],
-          metrics: result[1],
-        };
-      }
-    );
+    ]).then((result: [DataPostsDimensionDTO, DataPostsMetricsDTO]) => {
+      return {
+        dimension: result[0],
+        metrics: result[1],
+      };
+    });
   }
 
   private transformDimension(args: {
@@ -54,24 +52,19 @@ export class ServiceCQRSTablePostsTransformMapper {
     externalAccountId: number;
     post: LinkedInUgcPostsElementsDTO;
     assets: ReportRawDataAllInAssetsDTO;
-  }): PromiseB<DataTablePostsDimensionDTO> {
-    const actionTransformDimensionBase: PromiseB<DataTablePostsDimensionBaseDTO> =
+  }): PromiseB<DataPostsDimensionDTO> {
+    const actionTransformDimensionBase: PromiseB<DataPostsDimensionBaseDTO> =
       this.transformDimensionBase(args);
 
     const actionTransformDimensionAssets: PromiseB<
-      DataTablePostsDimensionAssetsDTO[]
+      DataPostsDimensionAssetsDTO[]
     > = this.transformDimensionAssets({ postAssets: args.assets });
 
     return PromiseB.all([
       actionTransformDimensionBase,
       actionTransformDimensionAssets,
     ]).then(
-      (
-        result: [
-          DataTablePostsDimensionBaseDTO,
-          DataTablePostsDimensionAssetsDTO[]
-        ]
-      ) => {
+      (result: [DataPostsDimensionBaseDTO, DataPostsDimensionAssetsDTO[]]) => {
         return {
           instance: result[0].instance,
           externalAccountId: result[0].externalAccountId,
@@ -90,7 +83,7 @@ export class ServiceCQRSTablePostsTransformMapper {
 
   private transformMetrics(args: {
     assets: ReportRawDataAllInAssetsDTO;
-  }): PromiseB<DataTablePostsMetricsDTO> {
+  }): PromiseB<DataPostsMetricsDTO> {
     return PromiseB.try(() => {
       return this.transformMetricsReactions({
         reactionsRaw:
@@ -136,8 +129,10 @@ export class ServiceCQRSTablePostsTransformMapper {
     externalAccountId: number;
     post: LinkedInUgcPostsElementsDTO;
     assets: ReportRawDataAllInAssetsDTO;
-  }): PromiseB<DataTablePostsDimensionBaseDTO> {
+  }): PromiseB<DataPostsDimensionBaseDTO> {
     return PromiseB.try(() => {
+      const linkedInPermalinkEdge: string =
+        "https://www.linkedin.com/feed/update/";
       return {
         instance: args.instance,
         externalAccountId: args.externalAccountId,
@@ -148,15 +143,17 @@ export class ServiceCQRSTablePostsTransformMapper {
         createdTime: new Date(moment(args.post.firstPublishedAt).format()),
         type: args.post.specificContent["com.linkedin.ugc.ShareContent"]
           ?.shareMediaCategory,
-        permalink: args.assets.media?.permalinkUrl ?? "",
+        permalink: args.post["id~"]
+          ? linkedInPermalinkEdge + args.post["id~"]?.activity
+          : null ?? null,
       };
     });
   }
 
   private transformDimensionAssets(args: {
     postAssets: ReportRawDataAllInAssetsDTO;
-  }): PromiseB<DataTablePostsDimensionAssetsDTO[]> {
-    const actionDimensionAssets: PromiseB<DataTablePostsDimensionAssetsDTO[]> =
+  }): PromiseB<DataPostsDimensionAssetsDTO[]> {
+    const actionDimensionAssets: PromiseB<DataPostsDimensionAssetsDTO[]> =
       PromiseB.map(
         args.postAssets.media?.contentEntities ?? [],
         (asset: LinkedInMediaDataContentEntitiesDTO) => {
@@ -165,12 +162,12 @@ export class ServiceCQRSTablePostsTransformMapper {
             src: asset.url,
             link: null,
             title: args.postAssets.media?.title,
-          } as DataTablePostsDimensionAssetsDTO;
+          } as DataPostsDimensionAssetsDTO;
         }
       );
 
     return PromiseB.all(actionDimensionAssets).then(
-      (result: DataTablePostsDimensionAssetsDTO[]) => {
+      (result: DataPostsDimensionAssetsDTO[]) => {
         return result;
       }
     );

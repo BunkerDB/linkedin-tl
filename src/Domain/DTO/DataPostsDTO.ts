@@ -1,16 +1,15 @@
-export type DataTablePostsDTO = {
+export type DataPostsDTO = {
   _id: string;
-  dimension: DataTablePostsDimensionDTO;
-  metrics: DataTablePostsMetricsDTO;
+  dimension: DataPostsDimensionDTO;
+  metrics: DataPostsMetricsDTO;
   lastModified: Date;
 };
 
-export declare type DataTablePostsDimensionDTO =
-  DataTablePostsDimensionBaseDTO & {
-    assets: DataTablePostsDimensionAssetsDTO[];
-  };
+export declare type DataPostsDimensionDTO = DataPostsDimensionBaseDTO & {
+  assets: DataPostsDimensionAssetsDTO[];
+};
 
-export declare type DataTablePostsDimensionBaseDTO = {
+export declare type DataPostsDimensionBaseDTO = {
   instance: string;
   externalAccountId: number;
   externalMediaId: string;
@@ -19,10 +18,10 @@ export declare type DataTablePostsDimensionBaseDTO = {
   pictureLarge: string;
   createdTime: Date;
   type: string;
-  permalink: string;
+  permalink?: string | null;
 };
 
-export declare type DataTablePostsMetricsDTO = {
+export declare type DataPostsMetricsDTO = {
   unique_impressions_count: number;
   share_count: number;
   engagement: number;
@@ -39,7 +38,7 @@ export declare type DataTablePostsMetricsDTO = {
   video_views: number; //Video_Analytics
 };
 
-export declare type DataTablePostsDimensionAssetsDTO = {
+export declare type DataPostsDimensionAssetsDTO = {
   type: string;
   src: string;
   link?: string | null;

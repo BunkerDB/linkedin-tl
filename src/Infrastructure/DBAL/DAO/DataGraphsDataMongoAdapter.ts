@@ -1,5 +1,4 @@
 import PromiseB from "bluebird";
-import { IDataTablePostsDAO } from "../../../Domain/Interfaces/IDataTablePostsDAO";
 import {
   Document,
   Collection,
@@ -8,10 +7,11 @@ import {
   UpdateFilter,
   UpdateOptions,
 } from "mongodb";
-import { DataTablePostsCreateInputDTO } from "../../../Domain/DTO/DataTablePostsCreateInputDTO";
-import { DataTablePostsDTO } from "../../../Domain/DTO/DataTablePostsDTO";
+import { IDataGraphsDataDAO } from "../../../Domain/Interfaces/IDataGraphsDataDAO";
+import { DataGraphsDataCreateInputDTO } from "../../../Domain/DTO/DataGraphsDataCreateInputDTO";
+import { DataGraphsDataDTO } from "../../../Domain/DTO/DataGraphsDataDTO";
 
-export class DataTablePostsMongoAdapter implements IDataTablePostsDAO {
+export class DataGraphsDataMongoAdapter implements IDataGraphsDataDAO {
   private _collection: Collection | undefined;
   private readonly _adapter: MongoClient;
 
@@ -36,15 +36,17 @@ export class DataTablePostsMongoAdapter implements IDataTablePostsDAO {
     PromiseB.try(() => {
       return this.adapter.connect();
     }).then((client: MongoClient) => {
-      this.collection = client.db("db_etl_linkedin_mongo").collection("posts");
+      this.collection = client
+        .db("db_etl_linkedin_mongo")
+        .collection("graphs_data");
     });
   }
 
-  upsert(args: { input: DataTablePostsCreateInputDTO }): PromiseB<boolean> {
+  upsert(args: { input: DataGraphsDataCreateInputDTO }): PromiseB<boolean> {
     return PromiseB.try(() => {
       const query: Filter<Document> = {
         "dimension.instance": args.input.dimension.instance,
-        "dimension.externalMediaId": args.input.dimension.externalMediaId,
+        "dimension.date": args.input.dimension.date,
         "dimension.externalAccountId": args.input.dimension.externalAccountId,
       };
       const update: UpdateFilter<Document> | Partial<Document> = {
@@ -59,18 +61,13 @@ export class DataTablePostsMongoAdapter implements IDataTablePostsDAO {
       return this.collection.updateOne(query, update, options);
     }).then((_) => {
       return true;
-      //TODO: Mapper to DataTablePostsDTO?
-
-      // return new DataTablePostsMapper().execute({
-      //   rawData: model,
-      // });
     });
   }
 
   read(args: {
     instance: string;
     externalAccountId: number;
-  }): PromiseB<DataTablePostsDTO[]> {
+  }): PromiseB<DataGraphsDataDTO[]> {
     return PromiseB.try(() => {
       return this.collection
         .find({
@@ -84,10 +81,11 @@ export class DataTablePostsMongoAdapter implements IDataTablePostsDAO {
         throw new Error("<model> not found");
       }
 
-      return model as unknown as DataTablePostsDTO[];
-      //TODO: Mapper to DataTablePostsDTO
+      return model as unknown as DataGraphsDataDTO[];
 
-      // return new DataTablePostsMapper().execute({
+      //TODO: Mapper to DataGraphsDataDTO
+
+      // return new DataGraphsDataMapper().execute({
       //   rawData: model,
       // });
     });
@@ -96,24 +94,24 @@ export class DataTablePostsMongoAdapter implements IDataTablePostsDAO {
   find(args: {
     instance: string;
     externalAccountId: number;
-    externalMediaId: string;
-  }): PromiseB<DataTablePostsDTO> {
+    date: Date;
+  }): PromiseB<DataGraphsDataDTO> {
     return PromiseB.try(() => {
       return this.collection.findOne({
         "dimension.instance": args.instance,
         "dimension.externalAccountId": args.externalAccountId,
-        "dimension.externalMediaId": args.externalMediaId,
+        "dimension.date": args.date,
       });
     }).then((document: Document | undefined | null) => {
       if (document === undefined || document === null) {
         //TODO: throw Domain Error
         throw new Error("<model> not found");
       }
-      return document as unknown as DataTablePostsDTO;
+      return document as unknown as DataGraphsDataDTO;
 
-      //TODO: Mapper to DataTablePostsDTO
+      //TODO: Mapper to DataGraphsDataDTO
 
-      // return new DataTablePostsMapper().execute({
+      // return new DataGraphsDataMapper().execute({
       //   rawData: model,
       // });
     });

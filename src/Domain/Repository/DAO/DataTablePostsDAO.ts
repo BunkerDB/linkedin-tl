@@ -1,20 +1,20 @@
 import PromiseB from "bluebird";
-import { IDataTablePostsDAO } from "../../Interfaces/IDataTablePostsDAO";
-import { DataTablePostsCreateInputDTO } from "../../DTO/DataTablePostsCreateInputDTO";
-import { DataTablePostsDTO } from "../../DTO/DataTablePostsDTO";
+import { IDataPostsDAO } from "../../Interfaces/IDataPostsDAO";
+import { DataPostsCreateInputDTO } from "../../DTO/DataPostsCreateInputDTO";
+import { DataPostsDTO } from "../../DTO/DataPostsDTO";
 
-export class DataTablePostsDAO implements IDataTablePostsDAO {
-  private readonly _adapter: IDataTablePostsDAO;
+export class DataTablePostsDAO implements IDataPostsDAO {
+  private readonly _adapter: IDataPostsDAO;
 
-  constructor(args: { adapter: IDataTablePostsDAO }) {
+  constructor(args: { adapter: IDataPostsDAO }) {
     this._adapter = args.adapter;
   }
 
-  get adapter(): IDataTablePostsDAO {
+  get adapter(): IDataPostsDAO {
     return this._adapter;
   }
 
-  upsert(args: { input: DataTablePostsCreateInputDTO }): PromiseB<boolean> {
+  upsert(args: { input: DataPostsCreateInputDTO }): PromiseB<boolean> {
     return PromiseB.try(() => {
       return this.adapter.upsert(args);
     });
@@ -23,7 +23,7 @@ export class DataTablePostsDAO implements IDataTablePostsDAO {
   read(args: {
     instance: string;
     externalAccountId: number;
-  }): PromiseB<DataTablePostsDTO[]> {
+  }): PromiseB<DataPostsDTO[]> {
     return PromiseB.try(() => {
       return this.adapter.read(args);
     });
@@ -33,7 +33,7 @@ export class DataTablePostsDAO implements IDataTablePostsDAO {
     instance: string;
     externalAccountId: number;
     externalMediaId: string;
-  }): PromiseB<DataTablePostsDTO> {
+  }): PromiseB<DataPostsDTO> {
     return PromiseB.try(() => {
       return this.adapter.find(args);
     });

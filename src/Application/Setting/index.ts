@@ -6,7 +6,6 @@ import { ContainerInterface } from "../Interface/ContainerInterface";
 
 export interface SettingsInterface {
   SERVER_PORT: number;
-  DSN: string;
   DSN_MONGODB: string;
   KAFKA_CLIENT_ID: string;
   KAFKA_LOGLEVEL: number;
@@ -27,7 +26,6 @@ const SettingsManager = (containerBuilder: ContainerBuilderInterface) => {
 
   const schemaSettings = Joi.object({
     SERVER_PORT: Joi.number().required(),
-    DSN: Joi.string().required(),
     DSN_MONGODB: Joi.string().required(),
     KAFKA_CLIENT_ID: Joi.string().required(),
     KAFKA_ADVERTISED_HOST_NAME: Joi.string().required(),
@@ -49,7 +47,6 @@ const SettingsManager = (containerBuilder: ContainerBuilderInterface) => {
 
   const validationResult: ValidationResult = schemaSettings.validate({
     SERVER_PORT: process.env.SERVER_PORT,
-    DSN: process.env.DSN,
     DSN_MONGODB: process.env.DSN_MONGODB,
     KAFKA_CLIENT_ID: process.env.KAFKA_CLIENT_ID,
     KAFKA_ADVERTISED_HOST_NAME: process.env.KAFKA_ADVERTISED_HOST_NAME,

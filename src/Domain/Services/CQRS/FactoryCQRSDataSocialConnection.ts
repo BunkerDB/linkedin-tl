@@ -2,11 +2,8 @@ import PromiseB from "bluebird";
 import { ErrorDomainBase } from "../../Error/ErrorDomainBase";
 import { ContainerInterface } from "../../../Application/Interface/ContainerInterface";
 import { IoC } from "../../../Application/Dependencies";
-import { DataGraphVisitorsDemographicDTO } from "../../DTO/DataGraphVisitorsDemographicDTO";
-import { DataGraphVisitorsStatisticsDTO } from "../../DTO/DataGraphVisitorsStatisticsDTO";
-import { DataGraphSharesStatisticsDTO } from "../../DTO/DataGraphSharesStatisticsDTO";
-import { DataGraphFollowersDemographicDTO } from "../../DTO/DataGraphFollowersDemographicDTO";
-import { DataGraphFollowersStatisticsDTO } from "../../DTO/DataGraphFollowersStatisticsDTO";
+import { DataGraphsDemographicDTO } from "../../DTO/DataGraphsDemographicDTO";
+// import { DataGraphsDataDTO } from "../../DTO/DataGraphsDataDTO";
 // import { DataTablePostsDTO } from "../../DTO/DataTablePostsDTO";
 import { ReportRawDataAllInDTO } from "../../DTO/ReportRawDataAllInDTO";
 import { ServiceCQRSGraphVisitorsDemographic } from "./ServiceCQRSGraphVisitorsDemographic";
@@ -16,6 +13,8 @@ import { ServiceCQRSGraphFollowersDemographic } from "./ServiceCQRSGraphFollower
 import { ServiceCQRSGraphFollowersStatistics } from "./ServiceCQRSGraphFollowersStatistics";
 import { ServiceCQRSTablePosts } from "./ServiceCQRSTablePosts";
 import { DataTablePostsDAO } from "../../Repository/DAO/DataTablePostsDAO";
+import { DataGraphsDataDAO } from "../../Repository/DAO/DataGraphsDataDAO";
+import { DataGraphsDemographicPeriodDTO } from "../../DTO/DataGraphsDemographicPeriodDTO";
 
 export class FactoryCQRSDataSocialConnection {
   private readonly _container: ContainerInterface;
@@ -28,12 +27,10 @@ export class FactoryCQRSDataSocialConnection {
   }
 
   execute(args: { rawData: ReportRawDataAllInDTO }): PromiseB<
-    | DataGraphVisitorsDemographicDTO
-    | DataGraphVisitorsStatisticsDTO
-    | DataGraphSharesStatisticsDTO
-    | DataGraphFollowersDemographicDTO
-    | DataGraphFollowersStatisticsDTO
-    | boolean //DataTablePostsDTO
+    | DataGraphsDemographicDTO
+    | DataGraphsDemographicPeriodDTO
+    //| DataGraphsDataDTO
+    | boolean //DataPostsDTO
     | false
   > {
     switch (args.rawData.edge) {
@@ -49,14 +46,11 @@ export class FactoryCQRSDataSocialConnection {
           rawRow: args.rawData,
         });
       case "GRAPH_VISITORS_STATISTICS":
-        return new ServiceCQRSGraphVisitorsStatistics(/*{
-          adapterDataGraphVisitorsStatistics:
-            new DataGraphVisitorsStatisticsDAO({
-              adapter: this.container.get(
-                IoC.DataGraphVisitorsStatisticsAdapter
-              ),
-            }),
-        }*/).execute({
+        return new ServiceCQRSGraphVisitorsStatistics({
+          adapter: new DataGraphsDataDAO({
+            adapter: this.container.get(IoC.IDataGraphsDataDAO),
+          }),
+        }).execute({
           rawRow: args.rawData,
         });
 
@@ -94,7 +88,7 @@ export class FactoryCQRSDataSocialConnection {
       case "TABLE_POSTS":
         return new ServiceCQRSTablePosts({
           adapter: new DataTablePostsDAO({
-            adapter: this.container.get(IoC.IDataTablePostsDAO),
+            adapter: this.container.get(IoC.IDataPostsDAO),
           }),
         }).execute({
           rawRow: args.rawData,
