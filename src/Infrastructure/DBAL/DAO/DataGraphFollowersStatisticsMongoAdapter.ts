@@ -1,5 +1,4 @@
 import PromiseB from "bluebird";
-import { IDataPostsDAO } from "../../../Domain/Interfaces/IDataPostsDAO";
 import {
   Document,
   Collection,
@@ -8,10 +7,13 @@ import {
   UpdateFilter,
   UpdateOptions,
 } from "mongodb";
-import { DataPostsCreateInputDTO } from "../../../Domain/DTO/DataPostsCreateInputDTO";
-import { DataPostsDTO } from "../../../Domain/DTO/DataPostsDTO";
+import { IDataGraphsDataDAO } from "../../../Domain/Interfaces/IDataGraphsDataDAO";
+import { DataGraphsDataCreateInputDTO } from "../../../Domain/DTO/DataGraphsDataCreateInputDTO";
+import { DataGraphsDataDTO } from "../../../Domain/DTO/DataGraphsDataDTO";
 
-export class DataPostsMongoAdapter implements IDataPostsDAO {
+export class DataGraphFollowersStatisticsMongoAdapter
+  implements IDataGraphsDataDAO
+{
   private _collection: Collection | undefined;
   private readonly _adapter: MongoClient;
 
@@ -36,21 +38,23 @@ export class DataPostsMongoAdapter implements IDataPostsDAO {
     PromiseB.try(() => {
       return this.adapter.connect();
     }).then((client: MongoClient) => {
-      this.collection = client.db("db_etl_linkedin_mongo").collection("posts");
+      this.collection = client
+        .db("db_etl_linkedin_mongo")
+        .collection("graphs_data");
     });
   }
 
-  upsert(args: { input: DataPostsCreateInputDTO }): PromiseB<boolean> {
+  upsert(args: { input: DataGraphsDataCreateInputDTO }): PromiseB<boolean> {
     return PromiseB.try(() => {
       const query: Filter<Document> = {
         "dimension.instance": args.input.dimension.instance,
-        "dimension.externalMediaId": args.input.dimension.externalMediaId,
+        "dimension.date": args.input.dimension.date,
         "dimension.externalAccountId": args.input.dimension.externalAccountId,
       };
       const update: UpdateFilter<Document> | Partial<Document> = {
         $set: {
           dimension: args.input.dimension,
-          metrics: args.input.metrics,
+          "metrics.followers": args.input.metrics.followers,
         },
         $currentDate: { lastModified: true },
       };
@@ -65,7 +69,7 @@ export class DataPostsMongoAdapter implements IDataPostsDAO {
   read(args: {
     instance: string;
     externalAccountId: number;
-  }): PromiseB<DataPostsDTO[]> {
+  }): PromiseB<DataGraphsDataDTO[]> {
     return PromiseB.try(() => {
       return this.collection
         .find({
@@ -79,11 +83,11 @@ export class DataPostsMongoAdapter implements IDataPostsDAO {
         throw new Error("<model> not found");
       }
 
-      return model as unknown as DataPostsDTO[];
+      return model as unknown as DataGraphsDataDTO[];
 
-      //TODO: Mapper to DataPostsDTO
+      //TODO: Mapper to DataGraphsDataDTO
 
-      // return new DataPostsMapper().execute({
+      // return new DataGraphsDataMapper().execute({
       //   rawData: model,
       // });
     });
@@ -92,24 +96,24 @@ export class DataPostsMongoAdapter implements IDataPostsDAO {
   find(args: {
     instance: string;
     externalAccountId: number;
-    externalMediaId: string;
-  }): PromiseB<DataPostsDTO> {
+    date: Date;
+  }): PromiseB<DataGraphsDataDTO> {
     return PromiseB.try(() => {
       return this.collection.findOne({
         "dimension.instance": args.instance,
         "dimension.externalAccountId": args.externalAccountId,
-        "dimension.externalMediaId": args.externalMediaId,
+        "dimension.date": args.date,
       });
     }).then((document: Document | undefined | null) => {
       if (document === undefined || document === null) {
         //TODO: throw Domain Error
         throw new Error("<model> not found");
       }
-      return document as unknown as DataPostsDTO;
+      return document as unknown as DataGraphsDataDTO;
 
-      //TODO: Mapper to DataPostsDTO
+      //TODO: Mapper to DataGraphsDataDTO
 
-      // return new DataPostsMapper().execute({
+      // return new DataGraphsDataMapper().execute({
       //   rawData: model,
       // });
     });

@@ -1,6 +1,9 @@
 import PromiseB from "bluebird";
 import moment from "moment";
-import { LinkedInOrganizationPageStatisticsElementsDTO } from "../../Infrastructure/DTO/LinkedInOrganizationPageStatisticsElementsDTO";
+import {
+  LinkedInOrganizationPageStatisticsElementsDTO,
+  PageViewsDTO,
+} from "../../Infrastructure/DTO/LinkedInOrganizationPageStatisticsElementsDTO";
 import { DataGraphsDataCreateInputDTO } from "../DTO/DataGraphsDataCreateInputDTO";
 import {
   DataGraphsDataDimensionDTO,
@@ -49,20 +52,24 @@ export class ServiceCQRSGraphVisitorsStatisticsTransformMapper {
   private transformMetrics(args: {
     post: LinkedInOrganizationPageStatisticsElementsDTO;
   }): PromiseB<DataGraphsDataMetricsDTO> {
-    return PromiseB.try(() => {
-      return Object.entries(args.post.totalPageStatistics.views).map(
-        ([key, value]) => {
-          return {
-            page: key,
-            total_views: value.pageViews,
-            unique_views: value.uniquePageViews,
-          };
-        }
-      );
-    }).then((metrics: DataGraphsDataMetricsVisitorsDTO[]) => {
-      return {
-        visitors: metrics,
-      };
-    });
+    const actionTransformVisitorsStatisticsMetrics: PromiseB<
+      DataGraphsDataMetricsVisitorsDTO[]
+    > = PromiseB.map(
+      Object.entries(args.post.totalPageStatistics.views),
+      (row: [string, PageViewsDTO]) => {
+        return {
+          page: row[0],
+          total_views: row[1].pageViews,
+          unique_views: row[1].uniquePageViews,
+        };
+      }
+    );
+    return PromiseB.all(actionTransformVisitorsStatisticsMetrics).then(
+      (metrics: DataGraphsDataMetricsVisitorsDTO[]) => {
+        return {
+          visitors: metrics,
+        };
+      }
+    );
   }
 }

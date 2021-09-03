@@ -22,7 +22,6 @@ export declare type DataPostsDimensionBaseDTO = {
 };
 
 export declare type DataPostsMetricsDTO = {
-  unique_impressions_count: number;
   share_count: number;
   engagement: number;
   click_count: number;

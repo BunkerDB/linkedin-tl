@@ -6,8 +6,10 @@ import { WinstonLoggerInstance } from "../../Infrastructure/Logger/WinstonLogger
 import { Http } from "../../Infrastructure/Http";
 import { HttpAttempt } from "../../Infrastructure/HttpAttempt";
 import { MongoDBClientDBAL } from "../../Infrastructure/DBAL/MongoDBClientDBAL";
-import { DataPostsMongoAdapter } from "../../Infrastructure/DBAL/DAO/DataPostsMongoAdapter";
-import { DataGraphsDataMongoAdapter } from "../../Infrastructure/DBAL/DAO/DataGraphsDataMongoAdapter";
+import { DataTablePostsMongoAdapter } from "../../Infrastructure/DBAL/DAO/DataTablePostsMongoAdapter";
+import { DataGraphFollowersStatisticsMongoAdapter } from "../../Infrastructure/DBAL/DAO/DataGraphFollowersStatisticsMongoAdapter";
+import { DataGraphVisitorsStatisticsMongoAdapter } from "../../Infrastructure/DBAL/DAO/DataGraphVisitorsStatisticsMongoAdapter";
+import { DataGraphSharesStatisticsMongoAdapter } from "../../Infrastructure/DBAL/DAO/DataGraphSharesStatisticsMongoAdapter";
 
 const IoC = {
   Settings: Symbol.for("Settings"),
@@ -16,8 +18,14 @@ const IoC = {
   Kafka: Symbol.for("Kafka"),
   MongoClient: Symbol.for("MongoClient"),
   HttpClient: Symbol.for("HttpClient"),
-  IDataPostsDAO: Symbol.for("IDataPostsDAO"),
-  IDataGraphsDataDAO: Symbol.for("IDataGraphsDataDAO"),
+  IDataTablePostsDAO: Symbol.for("IDataTablePostsDAO"),
+  IDataGraphFollowersStatisticsDAO: Symbol.for(
+    "IDataGraphFollowersStatisticsDAO"
+  ),
+  IDataGraphVisitorsStatisticsDAO: Symbol.for(
+    "IDataGraphVisitorsStatisticsDAO"
+  ),
+  IDataGraphSharesStatisticsDAO: Symbol.for("IDataGraphSharesStatisticsDAO"),
 };
 
 const DependenciesManager = (containerBuilder: ContainerBuilder) => {
@@ -60,17 +68,33 @@ const DependenciesManager = (containerBuilder: ContainerBuilder) => {
       },
     },
     {
-      key: IoC.IDataPostsDAO,
+      key: IoC.IDataTablePostsDAO,
       value: (container: ContainerInterface) => {
-        return new DataPostsMongoAdapter({
+        return new DataTablePostsMongoAdapter({
           adapter: container.get(IoC.MongoClient),
         });
       },
     },
     {
-      key: IoC.IDataGraphsDataDAO,
+      key: IoC.IDataGraphFollowersStatisticsDAO,
       value: (container: ContainerInterface) => {
-        return new DataGraphsDataMongoAdapter({
+        return new DataGraphFollowersStatisticsMongoAdapter({
+          adapter: container.get(IoC.MongoClient),
+        });
+      },
+    },
+    {
+      key: IoC.IDataGraphVisitorsStatisticsDAO,
+      value: (container: ContainerInterface) => {
+        return new DataGraphVisitorsStatisticsMongoAdapter({
+          adapter: container.get(IoC.MongoClient),
+        });
+      },
+    },
+    {
+      key: IoC.IDataGraphSharesStatisticsDAO,
+      value: (container: ContainerInterface) => {
+        return new DataGraphSharesStatisticsMongoAdapter({
           adapter: container.get(IoC.MongoClient),
         });
       },

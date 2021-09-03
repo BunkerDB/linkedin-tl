@@ -3,7 +3,7 @@ import { IDataGraphsDataDAO } from "../../Interfaces/IDataGraphsDataDAO";
 import { DataGraphsDataCreateInputDTO } from "../../DTO/DataGraphsDataCreateInputDTO";
 import { DataGraphsDataDTO } from "../../DTO/DataGraphsDataDTO";
 
-export class DataGraphsDataDAO implements IDataGraphsDataDAO {
+export class DataGraphFollowersStatisticsDAO implements IDataGraphsDataDAO {
   private readonly _adapter: IDataGraphsDataDAO;
 
   constructor(args: { adapter: IDataGraphsDataDAO }) {

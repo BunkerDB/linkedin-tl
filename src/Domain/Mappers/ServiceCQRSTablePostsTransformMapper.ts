@@ -92,27 +92,14 @@ export class ServiceCQRSTablePostsTransformMapper {
       });
     }).then((reactions: TablePostsTransformReactionsDTO) => {
       return {
-        unique_impressions_count:
-          args.assets.metrics?.totalShareStatistics?.uniqueImpressionsCount ??
-          0,
-        share_count:
-          args.assets.metrics?.totalShareStatistics?.uniqueImpressionsCount ??
-          0,
-        engagement:
-          args.assets.metrics?.totalShareStatistics?.uniqueImpressionsCount ??
-          0,
-        click_count:
-          args.assets.metrics?.totalShareStatistics?.uniqueImpressionsCount ??
-          0,
-        like_count:
-          args.assets.metrics?.totalShareStatistics?.uniqueImpressionsCount ??
-          0,
+        share_count: args.assets.metrics?.totalShareStatistics?.shareCount ?? 0,
+        engagement: args.assets.metrics?.totalShareStatistics?.engagement ?? 0,
+        click_count: args.assets.metrics?.totalShareStatistics?.clickCount ?? 0,
+        like_count: args.assets.metrics?.totalShareStatistics?.likeCount ?? 0,
         impression_count:
-          args.assets.metrics?.totalShareStatistics?.uniqueImpressionsCount ??
-          0,
+          args.assets.metrics?.totalShareStatistics?.impressionCount ?? 0,
         comment_count:
-          args.assets.metrics?.totalShareStatistics?.uniqueImpressionsCount ??
-          0,
+          args.assets.metrics?.totalShareStatistics?.commentCount ?? 0,
         reaction_appreciation: reactions.reaction_appreciation ?? 0,
         reaction_empathy: reactions.reaction_empathy ?? 0,
         reaction_interest: reactions.reaction_interest ?? 0,

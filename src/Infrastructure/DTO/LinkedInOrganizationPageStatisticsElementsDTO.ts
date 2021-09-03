@@ -88,7 +88,7 @@ declare type PageStatisticsClicksDTO = {
   mobileCustomButtonClickCounts?: PageCustomButtonClickCountsDTO[];
 };
 
-declare type PageViewsDTO = {
+export declare type PageViewsDTO = {
   pageViews: number;
   uniquePageViews: number;
 };

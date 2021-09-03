@@ -13,8 +13,10 @@ import { ServiceCQRSGraphFollowersDemographic } from "./ServiceCQRSGraphFollower
 import { ServiceCQRSGraphFollowersStatistics } from "./ServiceCQRSGraphFollowersStatistics";
 import { ServiceCQRSTablePosts } from "./ServiceCQRSTablePosts";
 import { DataTablePostsDAO } from "../../Repository/DAO/DataTablePostsDAO";
-import { DataGraphsDataDAO } from "../../Repository/DAO/DataGraphsDataDAO";
+import { DataGraphVisitorsStatisticsDAO } from "../../Repository/DAO/DataGraphVisitorsStatisticsDAO";
 import { DataGraphsDemographicPeriodDTO } from "../../DTO/DataGraphsDemographicPeriodDTO";
+import { DataGraphFollowersStatisticsDAO } from "../../Repository/DAO/DataGraphFollowersStatisticsDAO";
+import { DataGraphSharesStatisticsDAO } from "../../Repository/DAO/DataGraphSharesStatisticsDAO";
 
 export class FactoryCQRSDataSocialConnection {
   private readonly _container: ContainerInterface;
@@ -47,19 +49,19 @@ export class FactoryCQRSDataSocialConnection {
         });
       case "GRAPH_VISITORS_STATISTICS":
         return new ServiceCQRSGraphVisitorsStatistics({
-          adapter: new DataGraphsDataDAO({
-            adapter: this.container.get(IoC.IDataGraphsDataDAO),
+          adapter: new DataGraphVisitorsStatisticsDAO({
+            adapter: this.container.get(IoC.IDataGraphVisitorsStatisticsDAO),
           }),
         }).execute({
           rawRow: args.rawData,
         });
 
       case "GRAPH_SHARES_STATISTICS":
-        return new ServiceCQRSGraphSharesStatistics(/*{
-          adapterDataGraphSharesStatistics: new DataGraphSharesStatisticsDAO({
-            adapter: this.container.get(IoC.DataGraphSharesStatisticsAdapter),
+        return new ServiceCQRSGraphSharesStatistics({
+          adapter: new DataGraphSharesStatisticsDAO({
+            adapter: this.container.get(IoC.IDataGraphSharesStatisticsDAO),
           }),
-        }*/).execute({
+        }).execute({
           rawRow: args.rawData,
         });
 
@@ -75,20 +77,17 @@ export class FactoryCQRSDataSocialConnection {
           rawRow: args.rawData,
         });
       case "GRAPH_FOLLOWERS_STATISTICS":
-        return new ServiceCQRSGraphFollowersStatistics(/*{
-          adapterDataGraphFollowersStatistics:
-            new DataGraphFollowersStatisticsDAO({
-              adapter: this.container.get(
-                IoC.DataGraphFollowersStatisticsAdapter
-              ),
-            }),
-        }*/).execute({
+        return new ServiceCQRSGraphFollowersStatistics({
+          adapter: new DataGraphFollowersStatisticsDAO({
+            adapter: this.container.get(IoC.IDataGraphFollowersStatisticsDAO),
+          }),
+        }).execute({
           rawRow: args.rawData,
         });
       case "TABLE_POSTS":
         return new ServiceCQRSTablePosts({
           adapter: new DataTablePostsDAO({
-            adapter: this.container.get(IoC.IDataPostsDAO),
+            adapter: this.container.get(IoC.IDataTablePostsDAO),
           }),
         }).execute({
           rawRow: args.rawData,

@@ -11,7 +11,9 @@ import { IDataGraphsDataDAO } from "../../../Domain/Interfaces/IDataGraphsDataDA
 import { DataGraphsDataCreateInputDTO } from "../../../Domain/DTO/DataGraphsDataCreateInputDTO";
 import { DataGraphsDataDTO } from "../../../Domain/DTO/DataGraphsDataDTO";
 
-export class DataGraphsDataMongoAdapter implements IDataGraphsDataDAO {
+export class DataGraphVisitorsStatisticsMongoAdapter
+  implements IDataGraphsDataDAO
+{
   private _collection: Collection | undefined;
   private readonly _adapter: MongoClient;
 
@@ -52,7 +54,7 @@ export class DataGraphsDataMongoAdapter implements IDataGraphsDataDAO {
       const update: UpdateFilter<Document> | Partial<Document> = {
         $set: {
           dimension: args.input.dimension,
-          metrics: args.input.metrics,
+          "metrics.visitors": args.input.metrics.visitors,
         },
         $currentDate: { lastModified: true },
       };
