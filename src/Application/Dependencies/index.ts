@@ -10,6 +10,7 @@ import { DataTablePostsMongoAdapter } from "../../Infrastructure/DBAL/DAO/DataTa
 import { DataGraphFollowersStatisticsMongoAdapter } from "../../Infrastructure/DBAL/DAO/DataGraphFollowersStatisticsMongoAdapter";
 import { DataGraphVisitorsStatisticsMongoAdapter } from "../../Infrastructure/DBAL/DAO/DataGraphVisitorsStatisticsMongoAdapter";
 import { DataGraphSharesStatisticsMongoAdapter } from "../../Infrastructure/DBAL/DAO/DataGraphSharesStatisticsMongoAdapter";
+import { DataGraphFollowersDemographicMongoAdapter } from "../../Infrastructure/DBAL/DAO/DataGraphFollowersDemographicMongoAdapter";
 
 const IoC = {
   Settings: Symbol.for("Settings"),
@@ -26,6 +27,9 @@ const IoC = {
     "IDataGraphVisitorsStatisticsDAO"
   ),
   IDataGraphSharesStatisticsDAO: Symbol.for("IDataGraphSharesStatisticsDAO"),
+  IDataGraphFollowersDemographicDAO: Symbol.for(
+    "IDataGraphFollowersDemographicDAO"
+  ),
 };
 
 const DependenciesManager = (containerBuilder: ContainerBuilder) => {
@@ -95,6 +99,14 @@ const DependenciesManager = (containerBuilder: ContainerBuilder) => {
       key: IoC.IDataGraphSharesStatisticsDAO,
       value: (container: ContainerInterface) => {
         return new DataGraphSharesStatisticsMongoAdapter({
+          adapter: container.get(IoC.MongoClient),
+        });
+      },
+    },
+    {
+      key: IoC.IDataGraphFollowersDemographicDAO,
+      value: (container: ContainerInterface) => {
+        return new DataGraphFollowersDemographicMongoAdapter({
           adapter: container.get(IoC.MongoClient),
         });
       },

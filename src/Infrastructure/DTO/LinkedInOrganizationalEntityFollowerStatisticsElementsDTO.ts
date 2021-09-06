@@ -13,47 +13,52 @@ export type LinkedInOrganizationalEntityFollowerStatisticsElementsDTO = {
   timeRange?: LinkedInTimeRangeDTO;
 };
 
-declare type FollowerGainsDTO = {
+export declare type FollowerGainsDTO = {
   organicFollowerGain: number;
   paidFollowerGain: number;
 };
 
-declare type FollowerCountsByAssociationTypeDTO = {
+export declare type FollowerCountsByAssociationTypeDTO = {
   followerCounts: FollowerCountsDTO;
   associationType?: string;
 };
 
-declare type FollowerCountsByRegionDTO = {
+export declare type FollowerCountsByRegionDTO = {
   region: string;
   followerCounts: FollowerCountsDTO;
+  [key: string]: string | FollowerCountsDTO;
 };
 
-declare type FollowerCountsBySeniorityDTO = {
+export declare type FollowerCountsBySeniorityDTO = {
   seniority: string;
   followerCounts: FollowerCountsDTO;
+  [key: string]: string | FollowerCountsDTO;
 };
 
-declare type FollowerCountsByIndustryDTO = {
+export declare type FollowerCountsByIndustryDTO = {
   industry: string;
   followerCounts: FollowerCountsDTO;
+  [key: string]: string | FollowerCountsDTO;
 };
 
-declare type FollowerCountsByFunctionDTO = {
+export declare type FollowerCountsByFunctionDTO = {
   function: string;
   followerCounts: FollowerCountsDTO;
+  [key: string]: string | FollowerCountsDTO;
 };
 
-declare type FollowerCountsByStaffCountRangeDTO = {
+export declare type FollowerCountsByStaffCountRangeDTO = {
   staffCountRange: string;
   followerCounts: FollowerCountsDTO;
 };
 
-declare type FollowerCountsByCountryDTO = {
+export declare type FollowerCountsByCountryDTO = {
   country: string;
   followerCounts: FollowerCountsDTO;
+  [key: string]: string | FollowerCountsDTO;
 };
 
-declare type FollowerCountsDTO = {
+export declare type FollowerCountsDTO = {
   organicFollowerCount: number;
   paidFollowerCount: number;
 };

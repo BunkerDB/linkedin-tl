@@ -2,7 +2,7 @@ import PromiseB from "bluebird";
 import { ErrorDomainBase } from "../../Error/ErrorDomainBase";
 import { ContainerInterface } from "../../../Application/Interface/ContainerInterface";
 import { IoC } from "../../../Application/Dependencies";
-import { DataGraphsDemographicDTO } from "../../DTO/DataGraphsDemographicDTO";
+// import { DataGraphsDemographicDTO } from "../../DTO/DataGraphsDemographicDTO";
 // import { DataGraphsDataDTO } from "../../DTO/DataGraphsDataDTO";
 // import { DataTablePostsDTO } from "../../DTO/DataTablePostsDTO";
 import { ReportRawDataAllInDTO } from "../../DTO/ReportRawDataAllInDTO";
@@ -17,6 +17,7 @@ import { DataGraphVisitorsStatisticsDAO } from "../../Repository/DAO/DataGraphVi
 import { DataGraphsDemographicPeriodDTO } from "../../DTO/DataGraphsDemographicPeriodDTO";
 import { DataGraphFollowersStatisticsDAO } from "../../Repository/DAO/DataGraphFollowersStatisticsDAO";
 import { DataGraphSharesStatisticsDAO } from "../../Repository/DAO/DataGraphSharesStatisticsDAO";
+import { DataGraphFollowersDemographicDAO } from "../../Repository/DAO/DataGraphFollowersDemographicDAO";
 
 export class FactoryCQRSDataSocialConnection {
   private readonly _container: ContainerInterface;
@@ -29,7 +30,7 @@ export class FactoryCQRSDataSocialConnection {
   }
 
   execute(args: { rawData: ReportRawDataAllInDTO }): PromiseB<
-    | DataGraphsDemographicDTO
+    //| DataGraphsDemographicDTO
     | DataGraphsDemographicPeriodDTO
     //| DataGraphsDataDTO
     | boolean //DataPostsDTO
@@ -66,14 +67,11 @@ export class FactoryCQRSDataSocialConnection {
         });
 
       case "GRAPH_FOLLOWERS_DEMOGRAPHIC":
-        return new ServiceCQRSGraphFollowersDemographic(/*{
-          adapterDataGraphFollowersDemographic:
-            new DataGraphFollowersDemographicDAO({
-              adapter: this.container.get(
-                IoC.DataGraphFollowersDemographicAdapter
-              ),
-            }),
-        }*/).execute({
+        return new ServiceCQRSGraphFollowersDemographic({
+          adapter: new DataGraphFollowersDemographicDAO({
+            adapter: this.container.get(IoC.IDataGraphFollowersDemographicDAO),
+          }),
+        }).execute({
           rawRow: args.rawData,
         });
       case "GRAPH_FOLLOWERS_STATISTICS":
