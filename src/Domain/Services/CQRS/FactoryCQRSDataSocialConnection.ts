@@ -14,10 +14,11 @@ import { ServiceCQRSGraphFollowersStatistics } from "./ServiceCQRSGraphFollowers
 import { ServiceCQRSTablePosts } from "./ServiceCQRSTablePosts";
 import { DataTablePostsDAO } from "../../Repository/DAO/DataTablePostsDAO";
 import { DataGraphVisitorsStatisticsDAO } from "../../Repository/DAO/DataGraphVisitorsStatisticsDAO";
-import { DataGraphsDemographicPeriodDTO } from "../../DTO/DataGraphsDemographicPeriodDTO";
+// import { DataGraphsDemographicPeriodDTO } from "../../DTO/DataGraphsDemographicPeriodDTO";
 import { DataGraphFollowersStatisticsDAO } from "../../Repository/DAO/DataGraphFollowersStatisticsDAO";
 import { DataGraphSharesStatisticsDAO } from "../../Repository/DAO/DataGraphSharesStatisticsDAO";
 import { DataGraphFollowersDemographicDAO } from "../../Repository/DAO/DataGraphFollowersDemographicDAO";
+import { DataGraphVisitorsDemographicDAO } from "../../Repository/DAO/DataGraphVisitorsDemographicDAO";
 
 export class FactoryCQRSDataSocialConnection {
   private readonly _container: ContainerInterface;
@@ -31,21 +32,18 @@ export class FactoryCQRSDataSocialConnection {
 
   execute(args: { rawData: ReportRawDataAllInDTO }): PromiseB<
     //| DataGraphsDemographicDTO
-    | DataGraphsDemographicPeriodDTO
+    //| DataGraphsDemographicPeriodDTO
     //| DataGraphsDataDTO
     | boolean //DataPostsDTO
     | false
   > {
     switch (args.rawData.edge) {
       case "GRAPH_VISITORS_DEMOGRAPHIC":
-        return new ServiceCQRSGraphVisitorsDemographic(/*{
-          adapterDataGraphVisitorsDemographic:
-            new DataGraphVisitorsDemographicDAO({
-              adapter: this.container.get(
-                IoC.DataGraphVisitorsDemographicAdapter
-              ),
-            }),
-        }*/).execute({
+        return new ServiceCQRSGraphVisitorsDemographic({
+          adapter: new DataGraphVisitorsDemographicDAO({
+            adapter: this.container.get(IoC.IDataGraphVisitorsDemographicDAO),
+          }),
+        }).execute({
           rawRow: args.rawData,
         });
       case "GRAPH_VISITORS_STATISTICS":

@@ -8,9 +8,10 @@ export type ReportRawDataAllInDTO = {
   organization: number;
   startDate: Date;
   endDate: Date;
+  periodId?: string;
   edge: ElementEdge;
   dimensions: DimensionsDTO[] | [];
-  assets: ReportRawDataAllInAssetsDTO | []; //TODO: Check this
+  assets: ReportRawDataAllInAssetsDTO | [];
   data: { [key in string]?: JsonValue }[];
   createdAt: Date;
   updatedAt: Date;

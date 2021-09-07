@@ -50,6 +50,7 @@ export declare type FollowerCountsByFunctionDTO = {
 export declare type FollowerCountsByStaffCountRangeDTO = {
   staffCountRange: string;
   followerCounts: FollowerCountsDTO;
+  [key: string]: string | FollowerCountsDTO;
 };
 
 export declare type FollowerCountsByCountryDTO = {

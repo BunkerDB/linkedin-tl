@@ -15,31 +15,37 @@ export type LinkedInOrganizationPageStatisticsElementsDTO = {
 export declare type PageStatisticsBySeniorityDTO = {
   pageStatistics: PageStatisticsDTO;
   seniority: string;
+  [key: string]: string | PageStatisticsDTO;
 };
 
 export declare type PageStatisticsByCountryDTO = {
   pageStatistics: PageStatisticsDTO;
   country: string;
+  [key: string]: string | PageStatisticsDTO;
 };
 
 export declare type PageStatisticsByIndustryDTO = {
   pageStatistics: PageStatisticsDTO;
   industry: string;
+  [key: string]: string | PageStatisticsDTO;
 };
 
 export declare type PageStatisticsByStaffCountRangeDTO = {
   pageStatistics: PageStatisticsDTO;
   staffCountRange: string;
+  [key: string]: string | PageStatisticsDTO;
 };
 
 export declare type PageStatisticsByRegionDTO = {
   pageStatistics: PageStatisticsDTO;
   region: string;
+  [key: string]: string | PageStatisticsDTO;
 };
 
 export declare type PageStatisticsByFunctionDTO = {
   pageStatistics: PageStatisticsDTO;
   function: string;
+  [key: string]: string | PageStatisticsDTO;
 };
 
 declare type TotalPageStatisticsDTO = {

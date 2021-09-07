@@ -5,6 +5,7 @@ import {
   FollowerCountsByIndustryDTO,
   FollowerCountsByRegionDTO,
   FollowerCountsBySeniorityDTO,
+  FollowerCountsByStaffCountRangeDTO,
   LinkedInOrganizationalEntityFollowerStatisticsElementsDTO,
 } from "../../Infrastructure/DTO/LinkedInOrganizationalEntityFollowerStatisticsElementsDTO";
 import { DataGraphsDemographicCreateInputDTO } from "../DTO/DataGraphsDemographicCreateInputDTO";
@@ -14,6 +15,7 @@ import { GraphsDemographicFunctionsTransformMapper } from "./GraphsDemographicFu
 import { GraphsDemographicIndustriesTransformMapper } from "./GraphsDemographicIndustriesTransformMapper";
 import { GraphsDemographicRegionsTransformMapper } from "./GraphsDemographicRegionsTransformMapper";
 import { GraphsDemographicSenioritiesTransformMapper } from "./GraphsDemographicSenioritiesTransformMapper";
+import { GraphsDemographicStaffCountRangeTransformMapper } from "./GraphsDemographicStaffCountRangeTransformMapper";
 
 export declare type DataGraphsDemographicTransformInputDTO = {
   instance: string;
@@ -24,8 +26,9 @@ export declare type DataGraphsDemographicTransformInputDTO = {
     | FollowerCountsByFunctionDTO[]
     | FollowerCountsByIndustryDTO[]
     | FollowerCountsByRegionDTO[]
-    | FollowerCountsBySeniorityDTO[];
-  dimensions: DimensionsDTO[];
+    | FollowerCountsBySeniorityDTO[]
+    | FollowerCountsByStaffCountRangeDTO[];
+  dimensions?: DimensionsDTO[];
 };
 
 export class ServiceCQRSGraphFollowersDemographicTransformMapper {
@@ -36,7 +39,6 @@ export class ServiceCQRSGraphFollowersDemographicTransformMapper {
     rawRow: LinkedInOrganizationalEntityFollowerStatisticsElementsDTO;
     dimensions: DimensionsDTO[];
   }): PromiseB<DataGraphsDemographicCreateInputDTO[]> {
-    //TODO: Add Edges with no Dimensions
     const actionCountries: PromiseB<DataGraphsDemographicCreateInputDTO[]> =
       this.transformCountriesData({
         instance: args.instance,
@@ -92,12 +94,22 @@ export class ServiceCQRSGraphFollowersDemographicTransformMapper {
         }),
       });
 
+    const actionStaffCountRange: PromiseB<
+      DataGraphsDemographicCreateInputDTO[]
+    > = this.transformStaffCountRangeData({
+      instance: args.instance,
+      externalAccountId: args.externalAccountId,
+      totalFollowers: args.totalFollowers,
+      rawRow: args.rawRow.followerCountsByStaffCountRange ?? [],
+    });
+
     return PromiseB.all([
       actionCountries,
       actionFunctions,
       actionIndustries,
       actionRegions,
       actionSeniorities,
+      actionStaffCountRange,
     ]).then((demographicData: DataGraphsDemographicCreateInputDTO[][]) => {
       const countryDims: DataGraphsDemographicCreateInputDTO[] =
         demographicData[0] ?? ([] as DataGraphsDemographicCreateInputDTO[]);
@@ -109,64 +121,53 @@ export class ServiceCQRSGraphFollowersDemographicTransformMapper {
         demographicData[3] ?? ([] as DataGraphsDemographicCreateInputDTO[]);
       const seniorityDims: DataGraphsDemographicCreateInputDTO[] =
         demographicData[4] ?? ([] as DataGraphsDemographicCreateInputDTO[]);
+      const staffCountDims: DataGraphsDemographicCreateInputDTO[] =
+        demographicData[5] ?? ([] as DataGraphsDemographicCreateInputDTO[]);
 
       return countryDims
         .concat(regionDims)
         .concat(industryDims)
         .concat(seniorityDims)
-        .concat(functionDims);
+        .concat(functionDims)
+        .concat(staffCountDims);
     });
   }
 
-  private transformCountriesData(args: {
-    instance: string;
-    externalAccountId: number;
-    totalFollowers: number;
-    rawRow: FollowerCountsByCountryDTO[];
-    dimensions: DimensionsDTO[];
-  }): PromiseB<DataGraphsDemographicCreateInputDTO[]> {
+  private transformCountriesData(
+    args: DataGraphsDemographicTransformInputDTO
+  ): PromiseB<DataGraphsDemographicCreateInputDTO[]> {
     return new GraphsDemographicCountriesTransformMapper().execute(args);
   }
 
-  private transformFunctionsData(args: {
-    instance: string;
-    externalAccountId: number;
-    totalFollowers: number;
-    rawRow: FollowerCountsByFunctionDTO[];
-    dimensions: DimensionsDTO[];
-  }): PromiseB<DataGraphsDemographicCreateInputDTO[]> {
+  private transformFunctionsData(
+    args: DataGraphsDemographicTransformInputDTO
+  ): PromiseB<DataGraphsDemographicCreateInputDTO[]> {
     return PromiseB.try(() => {
       return new GraphsDemographicFunctionsTransformMapper().execute(args);
     });
   }
 
-  private transformIndustriesData(args: {
-    instance: string;
-    externalAccountId: number;
-    totalFollowers: number;
-    rawRow: FollowerCountsByIndustryDTO[];
-    dimensions: DimensionsDTO[];
-  }): PromiseB<DataGraphsDemographicCreateInputDTO[]> {
+  private transformIndustriesData(
+    args: DataGraphsDemographicTransformInputDTO
+  ): PromiseB<DataGraphsDemographicCreateInputDTO[]> {
     return new GraphsDemographicIndustriesTransformMapper().execute(args);
   }
 
-  private transformRegionsData(args: {
-    instance: string;
-    externalAccountId: number;
-    totalFollowers: number;
-    rawRow: FollowerCountsByRegionDTO[];
-    dimensions: DimensionsDTO[];
-  }): PromiseB<DataGraphsDemographicCreateInputDTO[]> {
+  private transformRegionsData(
+    args: DataGraphsDemographicTransformInputDTO
+  ): PromiseB<DataGraphsDemographicCreateInputDTO[]> {
     return new GraphsDemographicRegionsTransformMapper().execute(args);
   }
 
-  private transformSenioritiesData(args: {
-    instance: string;
-    externalAccountId: number;
-    totalFollowers: number;
-    rawRow: FollowerCountsBySeniorityDTO[];
-    dimensions: DimensionsDTO[];
-  }): PromiseB<DataGraphsDemographicCreateInputDTO[]> {
+  private transformSenioritiesData(
+    args: DataGraphsDemographicTransformInputDTO
+  ): PromiseB<DataGraphsDemographicCreateInputDTO[]> {
     return new GraphsDemographicSenioritiesTransformMapper().execute(args);
+  }
+
+  private transformStaffCountRangeData(
+    args: DataGraphsDemographicTransformInputDTO
+  ): PromiseB<DataGraphsDemographicCreateInputDTO[]> {
+    return new GraphsDemographicStaffCountRangeTransformMapper().execute(args);
   }
 }

@@ -4,6 +4,7 @@ import {
   FollowerCountsByIndustryDTO,
   FollowerCountsByRegionDTO,
   FollowerCountsBySeniorityDTO,
+  FollowerCountsByStaffCountRangeDTO,
 } from "../../Infrastructure/DTO/LinkedInOrganizationalEntityFollowerStatisticsElementsDTO";
 import PromiseB from "bluebird";
 import {
@@ -16,6 +17,7 @@ import { DataGraphsDemographicCreateInputDTO } from "../DTO/DataGraphsDemographi
 import { DimensionsDTO } from "../DTO/DimensionsDTO";
 import { Dimension } from "../Types/Dimension";
 import { DataGraphsDemographicTransformInputDTO } from "./ServiceCQRSGraphFollowersDemographicTransformMapper";
+import { ErrorDimensionNotFound } from "../Error/ErrorDimensionNotFound";
 
 export abstract class GraphsDemographicTransformMapperBase {
   abstract execute(
@@ -31,19 +33,25 @@ export abstract class GraphsDemographicTransformMapperBase {
       | FollowerCountsByFunctionDTO
       | FollowerCountsByIndustryDTO
       | FollowerCountsByRegionDTO
-      | FollowerCountsBySeniorityDTO;
-    dimensions?: DimensionsDTO[];
+      | FollowerCountsBySeniorityDTO
+      | FollowerCountsByStaffCountRangeDTO;
+    dimensions: DimensionsDTO[];
   }): PromiseB<DataGraphsDemographicDimensionDTO> {
     return PromiseB.try(() => {
-      const edge: string = args.edge.toLowerCase();
+      const edge: string =
+        args.edge === "STAFF_COUNT_RANGE"
+          ? "staffCountRange"
+          : args.edge.toLowerCase();
       const dimension: DimensionsDTO | undefined = args.dimensions?.find(
         (dimension) => {
           return dimension.externalId === args.rawRow[edge];
         }
       );
       if (!dimension) {
-        //TODO: Domain Error
-        throw new Error();
+        throw new ErrorDimensionNotFound({
+          edge: args.edge,
+          message: `Error in the ${this.constructor.name}.transformDimension(args) -> Not found.`,
+        });
       }
       return {
         instance: args.instance,
@@ -67,7 +75,8 @@ export abstract class GraphsDemographicTransformMapperBase {
       | FollowerCountsByFunctionDTO
       | FollowerCountsByIndustryDTO
       | FollowerCountsByRegionDTO
-      | FollowerCountsBySeniorityDTO;
+      | FollowerCountsBySeniorityDTO
+      | FollowerCountsByStaffCountRangeDTO;
   }): PromiseB<DataGraphsDemographicMetricsDTO> {
     return PromiseB.try(() => {
       const totalFollowers: number =

@@ -21,7 +21,7 @@ export class GraphsDemographicRegionsTransformMapper extends GraphsDemographicTr
             instance: args.instance,
             externalAccountId: args.externalAccountId,
             rawRow: rawRow,
-            dimensions: args.dimensions,
+            dimensions: args.dimensions ?? [],
           });
         const actionTransformMetrics: PromiseB<DataGraphsDemographicMetricsDTO> =
           this.transformMetrics({
