@@ -1,8 +1,8 @@
 import PromiseB from "bluebird";
 import moment from "moment";
-import { DimensionsDTO } from "../DTO/DimensionsDTO";
-import { Dimension } from "../Types/Dimension";
-import { ErrorDimensionNotFound } from "../Error/ErrorDimensionNotFound";
+import { DimensionsDTO } from "../../DTO/DimensionsDTO";
+import { Dimension } from "../../Types/Dimension";
+import { ErrorDimensionNotFound } from "../../Error/ErrorDimensionNotFound";
 import {
   PageStatisticsByCountryDTO,
   PageStatisticsByFunctionDTO,
@@ -10,14 +10,14 @@ import {
   PageStatisticsByRegionDTO,
   PageStatisticsBySeniorityDTO,
   PageStatisticsByStaffCountRangeDTO,
-} from "../../Infrastructure/DTO/LinkedInOrganizationPageStatisticsElementsDTO";
+} from "../../../Infrastructure/DTO/LinkedInOrganizationPageStatisticsElementsDTO";
 import {
   DataGraphsDemographicPeriodDimensionDTO,
   DataGraphsDemographicPeriodMetricsDTO,
   DataGraphsDemographicPeriodMetricsVisitorsDTO,
-} from "../DTO/DataGraphsDemographicPeriodDTO";
-import { DataGraphsDemographicPeriodCreateInputDTO } from "../DTO/DataGraphsDemographicPeriodCreateInputDTO";
-import { DataGraphsDemographicPeriodTransformInputDTO } from "./ServiceCQRSGraphVisitorsDemographicTransformMapper";
+} from "../../DTO/DataGraphsDemographicPeriodDTO";
+import { DataGraphsDemographicPeriodCreateInputDTO } from "../../DTO/DataGraphsDemographicPeriodCreateInputDTO";
+import { DataGraphsDemographicPeriodTransformInputDTO } from "../ServiceCQRSGraphVisitorsDemographicTransformMapper";
 
 export abstract class GraphsDemographicPeriodTransformMapperBase {
   abstract execute(

@@ -12,49 +12,28 @@ export class ServiceCQRSGraphSharesStatisticsTransformMapper {
   execute(args: {
     instance: string;
     externalAccountId: number;
-    rawRow: LinkedInOrganizationalEntityShareStatisticsElementsDTO[];
-  }): PromiseB<DataGraphsDataCreateInputDTO[]> {
-    const actionTransformMetricsFollowersStatistics: PromiseB<
-      DataGraphsDataCreateInputDTO[]
-    > = this.transformData(args);
+    rawRow: LinkedInOrganizationalEntityShareStatisticsElementsDTO;
+  }): PromiseB<DataGraphsDataCreateInputDTO> {
+    const actionTransformDimension: PromiseB<DataGraphsDataDimensionDTO> =
+      this.transformDimension({
+        instance: args.instance,
+        externalAccountId: args.externalAccountId,
+        rawRow: args.rawRow,
+      });
+    const actionTransformMetrics: PromiseB<DataGraphsDataMetricsDTO> =
+      this.transformMetrics({
+        rawRow: args.rawRow,
+      });
 
-    return PromiseB.all(actionTransformMetricsFollowersStatistics).then(
-      (result: DataGraphsDataCreateInputDTO[]) => {
-        return result;
-      }
-    );
-  }
-
-  private transformData(args: {
-    instance: string;
-    externalAccountId: number;
-    rawRow: LinkedInOrganizationalEntityShareStatisticsElementsDTO[];
-  }): PromiseB<DataGraphsDataCreateInputDTO[]> {
-    return PromiseB.map(
-      args.rawRow,
-      (rawRow: LinkedInOrganizationalEntityShareStatisticsElementsDTO) => {
-        const actionTransformDimension: PromiseB<DataGraphsDataDimensionDTO> =
-          this.transformDimension({
-            instance: args.instance,
-            externalAccountId: args.externalAccountId,
-            rawRow: rawRow,
-          });
-        const actionTransformMetrics: PromiseB<DataGraphsDataMetricsDTO> =
-          this.transformMetrics({
-            rawRow: rawRow,
-          });
-
-        return PromiseB.all([
-          actionTransformDimension,
-          actionTransformMetrics,
-        ]).then(
-          (result: [DataGraphsDataDimensionDTO, DataGraphsDataMetricsDTO]) => {
-            return {
-              dimension: result[0],
-              metrics: result[1],
-            };
-          }
-        );
+    return PromiseB.all([
+      actionTransformDimension,
+      actionTransformMetrics,
+    ]).then(
+      (result: [DataGraphsDataDimensionDTO, DataGraphsDataMetricsDTO]) => {
+        return {
+          dimension: result[0],
+          metrics: result[1],
+        };
       }
     );
   }

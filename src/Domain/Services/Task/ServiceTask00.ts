@@ -7,15 +7,16 @@ import { KafkaMessageTask00Mapper } from "../../Mappers/KafkaMessageTask00Mapper
 import { Tracer, FORMAT_HTTP_HEADERS, SpanContext } from "opentracing";
 import { IoC } from "../../../Application/Dependencies";
 import { FactoryCQRSDataSocialConnection } from "../CQRS/FactoryCQRSDataSocialConnection";
+import { ErrorEmptyDimensionsInPeriod } from "../../Error/ErrorEmptyDimensionsInPeriod";
 
 export class ServiceTask00 extends ServiceTaskBase<KafkaMessageTask00DTO, any> {
   constructor(args: { container: ContainerInterface }) {
     super(args);
   }
 
-  protected doHandleError(_: any): PromiseB<boolean> {
+  protected doHandleError(error: any): PromiseB<boolean> {
     return PromiseB.try(() => {
-      return false;
+      return error instanceof ErrorEmptyDimensionsInPeriod;
     });
   }
 

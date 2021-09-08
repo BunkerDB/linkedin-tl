@@ -10,12 +10,12 @@ import {
 } from "../../Infrastructure/DTO/LinkedInOrganizationalEntityFollowerStatisticsElementsDTO";
 import { DataGraphsDemographicCreateInputDTO } from "../DTO/DataGraphsDemographicCreateInputDTO";
 import { DimensionsDTO } from "../DTO/DimensionsDTO";
-import { GraphsDemographicCountriesTransformMapper } from "./GraphsDemographicCountriesTransformMapper";
-import { GraphsDemographicFunctionsTransformMapper } from "./GraphsDemographicFunctionsTransformMapper";
-import { GraphsDemographicIndustriesTransformMapper } from "./GraphsDemographicIndustriesTransformMapper";
-import { GraphsDemographicRegionsTransformMapper } from "./GraphsDemographicRegionsTransformMapper";
-import { GraphsDemographicSenioritiesTransformMapper } from "./GraphsDemographicSenioritiesTransformMapper";
-import { GraphsDemographicStaffCountRangeTransformMapper } from "./GraphsDemographicStaffCountRangeTransformMapper";
+import { GraphsDemographicCountriesTransformMapper } from "./GraphsDemographic/GraphsDemographicCountriesTransformMapper";
+import { GraphsDemographicFunctionsTransformMapper } from "./GraphsDemographic/GraphsDemographicFunctionsTransformMapper";
+import { GraphsDemographicIndustriesTransformMapper } from "./GraphsDemographic/GraphsDemographicIndustriesTransformMapper";
+import { GraphsDemographicRegionsTransformMapper } from "./GraphsDemographic/GraphsDemographicRegionsTransformMapper";
+import { GraphsDemographicSenioritiesTransformMapper } from "./GraphsDemographic/GraphsDemographicSenioritiesTransformMapper";
+import { GraphsDemographicStaffCountRangeTransformMapper } from "./GraphsDemographic/GraphsDemographicStaffCountRangeTransformMapper";
 
 export declare type DataGraphsDemographicTransformInputDTO = {
   instance: string;

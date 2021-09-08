@@ -6,7 +6,8 @@ import { ContainerInterface } from "../Interface/ContainerInterface";
 
 export interface SettingsInterface {
   SERVER_PORT: number;
-  DSN_MONGODB: string;
+  MONGODB_DSN: string;
+  MONGODB_DATABASE: string;
   KAFKA_CLIENT_ID: string;
   KAFKA_LOGLEVEL: number;
   KAFKA_ADVERTISED_HOST_NAME: string;
@@ -26,7 +27,8 @@ const SettingsManager = (containerBuilder: ContainerBuilderInterface) => {
 
   const schemaSettings = Joi.object({
     SERVER_PORT: Joi.number().required(),
-    DSN_MONGODB: Joi.string().required(),
+    MONGODB_DSN: Joi.string().required(),
+    MONGODB_DATABASE: Joi.string().required().default("db_linkedin"),
     KAFKA_CLIENT_ID: Joi.string().required(),
     KAFKA_ADVERTISED_HOST_NAME: Joi.string().required(),
     KAFKA_LOGLEVEL: Joi.number().required().min(0).max(5),
@@ -47,7 +49,8 @@ const SettingsManager = (containerBuilder: ContainerBuilderInterface) => {
 
   const validationResult: ValidationResult = schemaSettings.validate({
     SERVER_PORT: process.env.SERVER_PORT,
-    DSN_MONGODB: process.env.DSN_MONGODB,
+    MONGODB_DSN: process.env.MONGODB_DSN,
+    MONGODB_DATABASE: process.env.MONGODB_DATABASE,
     KAFKA_CLIENT_ID: process.env.KAFKA_CLIENT_ID,
     KAFKA_ADVERTISED_HOST_NAME: process.env.KAFKA_ADVERTISED_HOST_NAME,
     KAFKA_LOGLEVEL: process.env.KAFKA_LOGLEVEL,

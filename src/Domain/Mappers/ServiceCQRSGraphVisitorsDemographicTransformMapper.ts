@@ -10,12 +10,12 @@ import {
   PageStatisticsByStaffCountRangeDTO,
 } from "../../Infrastructure/DTO/LinkedInOrganizationPageStatisticsElementsDTO";
 import { DataGraphsDemographicPeriodCreateInputDTO } from "../DTO/DataGraphsDemographicPeriodCreateInputDTO";
-import { GraphsDemographicPeriodCountriesTransformMapper } from "./GraphsDemographicPeriodCountriesTransformMapper";
-import { GraphsDemographicPeriodFunctionsTransformMapper } from "./GraphsDemographicPeriodFunctionsTransformMapper";
-import { GraphsDemographicPeriodIndustriesTransformMapper } from "./GraphsDemographicPeriodIndustriesTransformMapper";
-import { GraphsDemographicPeriodRegionsTransformMapper } from "./GraphsDemographicPeriodRegionsTransformMapper";
-import { GraphsDemographicPeriodSenioritiesTransformMapper } from "./GraphsDemographicPeriodSenioritiesTransformMapper";
-import { GraphsDemographicPeriodStaffCountRangeTransformMapper } from "./GraphsDemographicPeriodStaffCountRangeTransformMapper";
+import { GraphsDemographicPeriodCountriesTransformMapper } from "./GraphsDemographicPeriod/GraphsDemographicPeriodCountriesTransformMapper";
+import { GraphsDemographicPeriodFunctionsTransformMapper } from "./GraphsDemographicPeriod/GraphsDemographicPeriodFunctionsTransformMapper";
+import { GraphsDemographicPeriodIndustriesTransformMapper } from "./GraphsDemographicPeriod/GraphsDemographicPeriodIndustriesTransformMapper";
+import { GraphsDemographicPeriodRegionsTransformMapper } from "./GraphsDemographicPeriod/GraphsDemographicPeriodRegionsTransformMapper";
+import { GraphsDemographicPeriodSenioritiesTransformMapper } from "./GraphsDemographicPeriod/GraphsDemographicPeriodSenioritiesTransformMapper";
+import { GraphsDemographicPeriodStaffCountRangeTransformMapper } from "./GraphsDemographicPeriod/GraphsDemographicPeriodStaffCountRangeTransformMapper";
 
 export declare type DataGraphsDemographicPeriodTransformInputDTO = {
   instance: string;

@@ -1,7 +1,6 @@
 import PromiseB from "bluebird";
 import {
   Document,
-  Collection,
   Filter,
   MongoClient,
   UpdateFilter,
@@ -10,40 +9,19 @@ import {
 import { IDataGraphsDemographicDAO } from "../../../Domain/Interfaces/IDataGraphsDemographicDAO";
 import { DataGraphsDemographicCreateInputDTO } from "../../../Domain/DTO/DataGraphsDemographicCreateInputDTO";
 import { DataGraphsDemographicDTO } from "../../../Domain/DTO/DataGraphsDemographicDTO";
+import { DataMongoAdapterBase } from "./DataMongoAdapterBase";
 
 export class DataGraphFollowersDemographicMongoAdapter
+  extends DataMongoAdapterBase
   implements IDataGraphsDemographicDAO
 {
-  private _collection: Collection | undefined;
-  private readonly _adapter: MongoClient;
-
-  constructor(args: { adapter: MongoClient }) {
-    this._adapter = args.adapter;
-    this.getConnection();
-  }
-
-  get adapter(): MongoClient {
-    return this._adapter;
-  }
-
-  get collection(): Collection {
-    return <Collection>this._collection;
-  }
-
-  set collection(value: Collection) {
-    this._collection = value;
-  }
-
-  private getConnection(): void {
-    PromiseB.try(() => {
-      return this.adapter.connect();
-    }).then((client: MongoClient) => {
-      this.collection = client
-        .db("db_etl_linkedin_mongo")
-        .collection("graphs_demographic");
+  constructor(args: { adapter: MongoClient; database: string }) {
+    super(args);
+    this.getConnection({
+      database: args.database,
+      collection: "graphs_demographic",
     });
   }
-
   upsert(args: {
     input: DataGraphsDemographicCreateInputDTO;
   }): PromiseB<boolean> {
@@ -87,12 +65,6 @@ export class DataGraphFollowersDemographicMongoAdapter
       }
 
       return model as unknown as DataGraphsDemographicDTO[];
-
-      //TODO: Mapper to DataGraphsDemographicDTO
-
-      // return new DataGraphsDemographicMapper().execute({
-      //   rawData: model,
-      // });
     });
   }
 
@@ -115,12 +87,6 @@ export class DataGraphFollowersDemographicMongoAdapter
         throw new Error("<model> not found");
       }
       return document as unknown as DataGraphsDemographicDTO;
-
-      //TODO: Mapper to DataGraphsDemographicDTO
-
-      // return new DataGraphsDemographicMapper().execute({
-      //   rawData: model,
-      // });
     });
   }
 }

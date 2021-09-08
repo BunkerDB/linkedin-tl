@@ -1,23 +1,23 @@
 import PromiseB from "bluebird";
 import { GraphsDemographicPeriodTransformMapperBase } from "./GraphsDemographicPeriodTransformMapperBase";
-import { DataGraphsDemographicPeriodTransformInputDTO } from "./ServiceCQRSGraphVisitorsDemographicTransformMapper";
-import { PageStatisticsByFunctionDTO } from "../../Infrastructure/DTO/LinkedInOrganizationPageStatisticsElementsDTO";
+import { DataGraphsDemographicPeriodTransformInputDTO } from "../ServiceCQRSGraphVisitorsDemographicTransformMapper";
 import {
   DataGraphsDemographicPeriodDimensionDTO,
   DataGraphsDemographicPeriodMetricsDTO,
-} from "../DTO/DataGraphsDemographicPeriodDTO";
-import { DataGraphsDemographicPeriodCreateInputDTO } from "../DTO/DataGraphsDemographicPeriodCreateInputDTO";
+} from "../../DTO/DataGraphsDemographicPeriodDTO";
+import { DataGraphsDemographicPeriodCreateInputDTO } from "../../DTO/DataGraphsDemographicPeriodCreateInputDTO";
+import { PageStatisticsBySeniorityDTO } from "../../../Infrastructure/DTO/LinkedInOrganizationPageStatisticsElementsDTO";
 
-export class GraphsDemographicPeriodFunctionsTransformMapper extends GraphsDemographicPeriodTransformMapperBase {
+export class GraphsDemographicPeriodSenioritiesTransformMapper extends GraphsDemographicPeriodTransformMapperBase {
   execute(
     args: DataGraphsDemographicPeriodTransformInputDTO
   ): PromiseB<DataGraphsDemographicPeriodCreateInputDTO[]> {
     return PromiseB.map(
-      args.rawRow as PageStatisticsByFunctionDTO[],
-      (rawRow: PageStatisticsByFunctionDTO) => {
+      args.rawRow as PageStatisticsBySeniorityDTO[],
+      (rawRow: PageStatisticsBySeniorityDTO) => {
         const actionTransformDimension: PromiseB<DataGraphsDemographicPeriodDimensionDTO> =
           this.transformDimension({
-            edge: "FUNCTION",
+            edge: "SENIORITY",
             instance: args.instance,
             externalAccountId: args.externalAccountId,
             startDate: args.startDate,

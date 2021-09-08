@@ -126,7 +126,7 @@ export class ServiceCQRSTablePostsTransformMapper {
         externalMediaId: args.post.id,
         text: args.assets.media?.text ?? "",
         picture: args.assets.media?.picture ?? "",
-        pictureLarge: args.assets.media?.picture ?? "", //TODO:
+        pictureLarge: args.assets.media?.picture ?? "",
         createdTime: new Date(moment(args.post.firstPublishedAt).format()),
         type: args.post.specificContent["com.linkedin.ugc.ShareContent"]
           ?.shareMediaCategory,

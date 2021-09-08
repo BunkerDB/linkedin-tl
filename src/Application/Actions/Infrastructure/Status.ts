@@ -81,25 +81,25 @@ export class Status extends ActionBase {
           .listDatabases();
 
         const actionFindPostsRows: Promise<Document[]> = client
-          .db("db_etl_linkedin_mongo")
+          .db("db_linkedin")
           .collection("posts")
           .find({})
           .toArray();
 
         const actionFindDataRows: Promise<Document[]> = client
-          .db("db_etl_linkedin_mongo")
+          .db("db_linkedin")
           .collection("graphs_data")
           .find({})
           .toArray();
 
         const actionFindDemographicRows: Promise<Document[]> = client
-          .db("db_etl_linkedin_mongo")
+          .db("db_linkedin")
           .collection("graphs_demographic")
           .find({})
           .toArray();
 
         const actionFindDemographicPeriodRows: Promise<Document[]> = client
-          .db("db_etl_linkedin_mongo")
+          .db("db_linkedin")
           .collection("graphs_demographic_period")
           .find({})
           .toArray();

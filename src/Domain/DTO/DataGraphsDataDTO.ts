@@ -18,7 +18,7 @@ export declare type DataGraphsDataMetricsDTO = {
 };
 
 export declare type DataGraphsDataMetricsVisitorsDTO = {
-  page: string; //TODO: Check this
+  page: string;
   total_views: number;
   unique_views: number;
 };

@@ -5,19 +5,19 @@ import {
   FollowerCountsByRegionDTO,
   FollowerCountsBySeniorityDTO,
   FollowerCountsByStaffCountRangeDTO,
-} from "../../Infrastructure/DTO/LinkedInOrganizationalEntityFollowerStatisticsElementsDTO";
+} from "../../../Infrastructure/DTO/LinkedInOrganizationalEntityFollowerStatisticsElementsDTO";
 import PromiseB from "bluebird";
 import {
   DataGraphsDemographicDimensionDTO,
   DataGraphsDemographicMetricsDTO,
   DataGraphsDemographicMetricsFollowersDTO,
-} from "../DTO/DataGraphsDemographicDTO";
+} from "../../DTO/DataGraphsDemographicDTO";
 import moment from "moment";
-import { DataGraphsDemographicCreateInputDTO } from "../DTO/DataGraphsDemographicCreateInputDTO";
-import { DimensionsDTO } from "../DTO/DimensionsDTO";
-import { Dimension } from "../Types/Dimension";
-import { DataGraphsDemographicTransformInputDTO } from "./ServiceCQRSGraphFollowersDemographicTransformMapper";
-import { ErrorDimensionNotFound } from "../Error/ErrorDimensionNotFound";
+import { DataGraphsDemographicCreateInputDTO } from "../../DTO/DataGraphsDemographicCreateInputDTO";
+import { DimensionsDTO } from "../../DTO/DimensionsDTO";
+import { Dimension } from "../../Types/Dimension";
+import { DataGraphsDemographicTransformInputDTO } from "../ServiceCQRSGraphFollowersDemographicTransformMapper";
+import { ErrorDimensionNotFound } from "../../Error/ErrorDimensionNotFound";
 
 export abstract class GraphsDemographicTransformMapperBase {
   abstract execute(

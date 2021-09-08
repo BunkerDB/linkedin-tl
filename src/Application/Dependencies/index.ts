@@ -60,7 +60,7 @@ const DependenciesManager = (containerBuilder: ContainerBuilder) => {
       key: IoC.MongoClient,
       value: (container: ContainerInterface) => {
         const settings: SettingsInterface = container.get(IoC.Settings);
-        return MongoDBClientDBAL.getInstance({ dsn: settings.DSN_MONGODB });
+        return MongoDBClientDBAL.getInstance({ dsn: settings.MONGODB_DSN });
       },
     },
     {
@@ -80,6 +80,7 @@ const DependenciesManager = (containerBuilder: ContainerBuilder) => {
       value: (container: ContainerInterface) => {
         return new DataTablePostsMongoAdapter({
           adapter: container.get(IoC.MongoClient),
+          database: container.get(IoC.Settings).MONGODB_DATABASE,
         });
       },
     },
@@ -88,6 +89,7 @@ const DependenciesManager = (containerBuilder: ContainerBuilder) => {
       value: (container: ContainerInterface) => {
         return new DataGraphFollowersStatisticsMongoAdapter({
           adapter: container.get(IoC.MongoClient),
+          database: container.get(IoC.Settings).MONGODB_DATABASE,
         });
       },
     },
@@ -96,6 +98,7 @@ const DependenciesManager = (containerBuilder: ContainerBuilder) => {
       value: (container: ContainerInterface) => {
         return new DataGraphVisitorsStatisticsMongoAdapter({
           adapter: container.get(IoC.MongoClient),
+          database: container.get(IoC.Settings).MONGODB_DATABASE,
         });
       },
     },
@@ -104,6 +107,7 @@ const DependenciesManager = (containerBuilder: ContainerBuilder) => {
       value: (container: ContainerInterface) => {
         return new DataGraphSharesStatisticsMongoAdapter({
           adapter: container.get(IoC.MongoClient),
+          database: container.get(IoC.Settings).MONGODB_DATABASE,
         });
       },
     },
@@ -112,6 +116,7 @@ const DependenciesManager = (containerBuilder: ContainerBuilder) => {
       value: (container: ContainerInterface) => {
         return new DataGraphFollowersDemographicMongoAdapter({
           adapter: container.get(IoC.MongoClient),
+          database: container.get(IoC.Settings).MONGODB_DATABASE,
         });
       },
     },
@@ -120,6 +125,7 @@ const DependenciesManager = (containerBuilder: ContainerBuilder) => {
       value: (container: ContainerInterface) => {
         return new DataGraphVisitorsDemographicMongoAdapter({
           adapter: container.get(IoC.MongoClient),
+          database: container.get(IoC.Settings).MONGODB_DATABASE,
         });
       },
     },

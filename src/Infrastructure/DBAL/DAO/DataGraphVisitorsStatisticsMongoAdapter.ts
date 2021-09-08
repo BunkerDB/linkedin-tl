@@ -1,7 +1,6 @@
 import PromiseB from "bluebird";
 import {
   Document,
-  Collection,
   Filter,
   MongoClient,
   UpdateFilter,
@@ -10,38 +9,15 @@ import {
 import { IDataGraphsDataDAO } from "../../../Domain/Interfaces/IDataGraphsDataDAO";
 import { DataGraphsDataCreateInputDTO } from "../../../Domain/DTO/DataGraphsDataCreateInputDTO";
 import { DataGraphsDataDTO } from "../../../Domain/DTO/DataGraphsDataDTO";
+import { DataMongoAdapterBase } from "./DataMongoAdapterBase";
 
 export class DataGraphVisitorsStatisticsMongoAdapter
+  extends DataMongoAdapterBase
   implements IDataGraphsDataDAO
 {
-  private _collection: Collection | undefined;
-  private readonly _adapter: MongoClient;
-
-  constructor(args: { adapter: MongoClient }) {
-    this._adapter = args.adapter;
-    this.getConnection();
-  }
-
-  get adapter(): MongoClient {
-    return this._adapter;
-  }
-
-  get collection(): Collection {
-    return <Collection>this._collection;
-  }
-
-  set collection(value: Collection) {
-    this._collection = value;
-  }
-
-  private getConnection(): void {
-    PromiseB.try(() => {
-      return this.adapter.connect();
-    }).then((client: MongoClient) => {
-      this.collection = client
-        .db("db_etl_linkedin_mongo")
-        .collection("graphs_data");
-    });
+  constructor(args: { adapter: MongoClient; database: string }) {
+    super(args);
+    this.getConnection({ database: args.database, collection: "graphs_data" });
   }
 
   upsert(args: { input: DataGraphsDataCreateInputDTO }): PromiseB<boolean> {
@@ -84,12 +60,6 @@ export class DataGraphVisitorsStatisticsMongoAdapter
       }
 
       return model as unknown as DataGraphsDataDTO[];
-
-      //TODO: Mapper to DataGraphsDataDTO
-
-      // return new DataGraphsDataMapper().execute({
-      //   rawData: model,
-      // });
     });
   }
 
@@ -110,12 +80,6 @@ export class DataGraphVisitorsStatisticsMongoAdapter
         throw new Error("<model> not found");
       }
       return document as unknown as DataGraphsDataDTO;
-
-      //TODO: Mapper to DataGraphsDataDTO
-
-      // return new DataGraphsDataMapper().execute({
-      //   rawData: model,
-      // });
     });
   }
 }

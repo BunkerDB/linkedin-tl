@@ -44,9 +44,9 @@ declare type LinkedInUgcPostsSpecificContentShareContentShareCommentaryDTO = {
 declare type LinkedInUgcPostsSpecificContentShareContentMediaDTO = {
   media: string;
   title: LinkedInUgcPostsSpecificContentShareContentMediaTitleDTO;
-  "media~"?: any; //TODO: DigitalMediaAssetDTO
+  "media~"?: any;
   description?: LinkedInUgcPostsSpecificContentShareContentMediaDescriptionDTO;
-  thumbnails?: any; //TODO: ContentMediaThumbnailsDTO
+  thumbnails?: any;
   status?: string;
   originalUrl?: string;
 };

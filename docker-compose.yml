@@ -5,12 +5,12 @@ services:
     image: mongo
     restart: unless-stopped
     ports:
-      - 27017:27017 #TODO: env
+      - ${MONGODB_LOCAL_PORT}:27017
     volumes:
       - ${MONGODB_LOCAL_VOLUME}:/data/db
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root #TODO: env
-      MONGO_INITDB_ROOT_PASSWORD: example #TODO: env
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
     container_name: mongo
 
 #  server:

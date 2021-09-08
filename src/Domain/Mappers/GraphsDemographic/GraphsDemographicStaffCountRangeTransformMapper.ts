@@ -1,14 +1,14 @@
 import PromiseB from "bluebird";
-import { DataGraphsDemographicCreateInputDTO } from "../DTO/DataGraphsDemographicCreateInputDTO";
+import { DataGraphsDemographicCreateInputDTO } from "../../DTO/DataGraphsDemographicCreateInputDTO";
 import {
   DataGraphsDemographicDimensionDTO,
   DataGraphsDemographicMetricsDTO,
-} from "../DTO/DataGraphsDemographicDTO";
+} from "../../DTO/DataGraphsDemographicDTO";
 import { GraphsDemographicTransformMapperBase } from "./GraphsDemographicTransformMapperBase";
-import { DataGraphsDemographicTransformInputDTO } from "./ServiceCQRSGraphFollowersDemographicTransformMapper";
-import { FollowerCountsByStaffCountRangeDTO } from "../../Infrastructure/DTO/LinkedInOrganizationalEntityFollowerStatisticsElementsDTO";
-import { DimensionsDTO } from "../DTO/DimensionsDTO";
-import { ServiceCreateFollowersStaffCountDimension } from "../Services/Dimension/ServiceCreateFollowersStaffCountDimension";
+import { DataGraphsDemographicTransformInputDTO } from "../ServiceCQRSGraphFollowersDemographicTransformMapper";
+import { FollowerCountsByStaffCountRangeDTO } from "../../../Infrastructure/DTO/LinkedInOrganizationalEntityFollowerStatisticsElementsDTO";
+import { DimensionsDTO } from "../../DTO/DimensionsDTO";
+import { ServiceCreateFollowersStaffCountDimension } from "../../Services/Dimension/ServiceCreateFollowersStaffCountDimension";
 
 export class GraphsDemographicStaffCountRangeTransformMapper extends GraphsDemographicTransformMapperBase {
   execute(

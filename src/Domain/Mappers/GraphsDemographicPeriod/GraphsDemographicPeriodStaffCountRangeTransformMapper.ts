@@ -1,14 +1,14 @@
 import PromiseB from "bluebird";
-import { DimensionsDTO } from "../DTO/DimensionsDTO";
-import { ServiceCreateVisitorsStaffCountDimension } from "../Services/Dimension/ServiceCreateVisitorsStaffCountDimension";
-import { PageStatisticsByStaffCountRangeDTO } from "../../Infrastructure/DTO/LinkedInOrganizationPageStatisticsElementsDTO";
-import { DataGraphsDemographicPeriodTransformInputDTO } from "./ServiceCQRSGraphVisitorsDemographicTransformMapper";
+import { DimensionsDTO } from "../../DTO/DimensionsDTO";
+import { ServiceCreateVisitorsStaffCountDimension } from "../../Services/Dimension/ServiceCreateVisitorsStaffCountDimension";
+import { PageStatisticsByStaffCountRangeDTO } from "../../../Infrastructure/DTO/LinkedInOrganizationPageStatisticsElementsDTO";
+import { DataGraphsDemographicPeriodTransformInputDTO } from "../ServiceCQRSGraphVisitorsDemographicTransformMapper";
 import { GraphsDemographicPeriodTransformMapperBase } from "./GraphsDemographicPeriodTransformMapperBase";
 import {
   DataGraphsDemographicPeriodDimensionDTO,
   DataGraphsDemographicPeriodMetricsDTO,
-} from "../DTO/DataGraphsDemographicPeriodDTO";
-import { DataGraphsDemographicPeriodCreateInputDTO } from "../DTO/DataGraphsDemographicPeriodCreateInputDTO";
+} from "../../DTO/DataGraphsDemographicPeriodDTO";
+import { DataGraphsDemographicPeriodCreateInputDTO } from "../../DTO/DataGraphsDemographicPeriodCreateInputDTO";
 
 export class GraphsDemographicPeriodStaffCountRangeTransformMapper extends GraphsDemographicPeriodTransformMapperBase {
   execute(

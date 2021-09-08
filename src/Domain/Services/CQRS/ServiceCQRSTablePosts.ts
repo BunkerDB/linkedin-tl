@@ -34,7 +34,7 @@ export class ServiceCQRSTablePosts {
 
       const assets: ReportRawDataAllInAssetsDTO = JSON.parse(
         args.rawRow.assets as unknown as string
-      ); //TODO: Check why array of assets is parsed as <string>
+      );
 
       return new ServiceCQRSTablePostsTransformMapper().execute({
         instance: args.rawRow.instance,

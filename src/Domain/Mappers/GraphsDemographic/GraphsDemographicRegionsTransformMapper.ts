@@ -1,23 +1,23 @@
 import PromiseB from "bluebird";
-import { DataGraphsDemographicCreateInputDTO } from "../DTO/DataGraphsDemographicCreateInputDTO";
+import { DataGraphsDemographicCreateInputDTO } from "../../DTO/DataGraphsDemographicCreateInputDTO";
 import {
   DataGraphsDemographicDimensionDTO,
   DataGraphsDemographicMetricsDTO,
-} from "../DTO/DataGraphsDemographicDTO";
+} from "../../DTO/DataGraphsDemographicDTO";
 import { GraphsDemographicTransformMapperBase } from "./GraphsDemographicTransformMapperBase";
-import { DataGraphsDemographicTransformInputDTO } from "./ServiceCQRSGraphFollowersDemographicTransformMapper";
-import { FollowerCountsBySeniorityDTO } from "../../Infrastructure/DTO/LinkedInOrganizationalEntityFollowerStatisticsElementsDTO";
+import { DataGraphsDemographicTransformInputDTO } from "../ServiceCQRSGraphFollowersDemographicTransformMapper";
+import { FollowerCountsByRegionDTO } from "../../../Infrastructure/DTO/LinkedInOrganizationalEntityFollowerStatisticsElementsDTO";
 
-export class GraphsDemographicSenioritiesTransformMapper extends GraphsDemographicTransformMapperBase {
+export class GraphsDemographicRegionsTransformMapper extends GraphsDemographicTransformMapperBase {
   execute(
     args: DataGraphsDemographicTransformInputDTO
   ): PromiseB<DataGraphsDemographicCreateInputDTO[]> {
     return PromiseB.map(
-      args.rawRow as unknown as FollowerCountsBySeniorityDTO[],
-      (rawRow: FollowerCountsBySeniorityDTO) => {
+      args.rawRow as unknown as FollowerCountsByRegionDTO[],
+      (rawRow: FollowerCountsByRegionDTO) => {
         const actionTransformDimension: PromiseB<DataGraphsDemographicDimensionDTO> =
           this.transformDimension({
-            edge: "SENIORITY",
+            edge: "REGION",
             instance: args.instance,
             externalAccountId: args.externalAccountId,
             rawRow: rawRow,

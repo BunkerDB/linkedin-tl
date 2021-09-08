@@ -5,6 +5,8 @@ import { DataGraphsDemographicCreateInputDTO } from "../../DTO/DataGraphsDemogra
 import { LinkedInFollowersRawDataDTO } from "../../DTO/LinkedInFollowersRawDataDTO";
 import { ServiceCQRSGraphFollowersDemographicTransformMapper } from "../../Mappers/ServiceCQRSGraphFollowersDemographicTransformMapper";
 import { DimensionsDTO } from "../../DTO/DimensionsDTO";
+import _ from "lodash";
+import { ErrorEmptyDimensionsInPeriod } from "../../Error/ErrorEmptyDimensionsInPeriod";
 
 export class ServiceCQRSGraphFollowersDemographic {
   private readonly _adapter: IDataGraphsDemographicDAO;
@@ -36,13 +38,18 @@ export class ServiceCQRSGraphFollowersDemographic {
       .data as unknown as LinkedInFollowersRawDataDTO;
 
     return PromiseB.try(() => {
+      const dimensions: DimensionsDTO[] = JSON.parse(
+        args.rawRow.dimensions as unknown as string
+      );
+
+      return this.validateDimensions({
+        report: args.rawRow,
+        dimensions: dimensions,
+      });
+    }).then((dimensions: DimensionsDTO[]) => {
       const actionTransformGraphFollowersDemographic: PromiseB<
         DataGraphsDemographicCreateInputDTO[][]
       > = PromiseB.map(rawRow.followersRawData, (followersRawData) => {
-        const dimensions: DimensionsDTO[] = JSON.parse(
-          args.rawRow.dimensions as unknown as string
-        );
-
         return new ServiceCQRSGraphFollowersDemographicTransformMapper().execute(
           {
             instance: args.rawRow.instance,
@@ -75,5 +82,24 @@ export class ServiceCQRSGraphFollowersDemographic {
         return result.every((status: boolean) => status);
       }
     );
+  }
+
+  private validateDimensions(args: {
+    report: ReportRawDataAllInDTO;
+    dimensions: DimensionsDTO[];
+  }): PromiseB<DimensionsDTO[]> {
+    return PromiseB.try(() => {
+      if (
+        _.isEmpty(args.dimensions) ||
+        args.dimensions === null ||
+        args.dimensions === undefined
+      ) {
+        throw new ErrorEmptyDimensionsInPeriod({
+          report: args.report,
+          message: `Error in the ${this.constructor.name}.validateDimensions(args) -> Empty Dimensions.`,
+        });
+      }
+      return args.dimensions;
+    });
   }
 }
