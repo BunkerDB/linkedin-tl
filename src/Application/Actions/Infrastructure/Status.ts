@@ -104,12 +104,20 @@ export class Status extends ActionBase {
           .find({})
           .toArray();
 
+        const actionFindOrganizationTotalPeriodRows: Promise<Document[]> =
+          client
+            .db("db_linkedin")
+            .collection("organization_total_period")
+            .find({})
+            .toArray();
+
         return PromiseB.all([
           actionListDatabases,
           actionFindPostsRows,
           actionFindDataRows,
           actionFindDemographicRows,
           actionFindDemographicPeriodRows,
+          actionFindOrganizationTotalPeriodRows,
         ]).then((result) => {
           return {
             status: true,
@@ -117,6 +125,7 @@ export class Status extends ActionBase {
             graphs_data: result[2],
             graphs_demographic: result[3],
             graphs_demographic_period: result[4],
+            organization_total_period: result[5],
             databases: result[0],
           };
         });

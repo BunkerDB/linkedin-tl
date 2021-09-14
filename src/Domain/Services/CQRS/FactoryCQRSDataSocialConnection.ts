@@ -19,6 +19,8 @@ import { DataGraphFollowersStatisticsDAO } from "../../Repository/DAO/DataGraphF
 import { DataGraphSharesStatisticsDAO } from "../../Repository/DAO/DataGraphSharesStatisticsDAO";
 import { DataGraphFollowersDemographicDAO } from "../../Repository/DAO/DataGraphFollowersDemographicDAO";
 import { DataGraphVisitorsDemographicDAO } from "../../Repository/DAO/DataGraphVisitorsDemographicDAO";
+import { ServiceCQRSOrganizationTotalPeriod } from "./ServiceCQRSOrganizationTotalPeriod";
+import { DataOrganizationTotalPeriodDAO } from "../../Repository/DAO/DataOrganizationTotalPeriodDAO";
 
 export class FactoryCQRSDataSocialConnection {
   private readonly _container: ContainerInterface;
@@ -84,6 +86,14 @@ export class FactoryCQRSDataSocialConnection {
         return new ServiceCQRSTablePosts({
           adapter: new DataTablePostsDAO({
             adapter: this.container.get(IoC.IDataTablePostsDAO),
+          }),
+        }).execute({
+          rawRow: args.rawData,
+        });
+      case "ORGANIZATION_TOTAL_PERIOD":
+        return new ServiceCQRSOrganizationTotalPeriod({
+          adapter: new DataOrganizationTotalPeriodDAO({
+            adapter: this.container.get(IoC.IDataOrganizationTotalPeriodDAO),
           }),
         }).execute({
           rawRow: args.rawData,

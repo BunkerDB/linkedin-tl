@@ -12,6 +12,7 @@ import { DataGraphVisitorsStatisticsMongoAdapter } from "../../Infrastructure/DB
 import { DataGraphSharesStatisticsMongoAdapter } from "../../Infrastructure/DBAL/DAO/DataGraphSharesStatisticsMongoAdapter";
 import { DataGraphFollowersDemographicMongoAdapter } from "../../Infrastructure/DBAL/DAO/DataGraphFollowersDemographicMongoAdapter";
 import { DataGraphVisitorsDemographicMongoAdapter } from "../../Infrastructure/DBAL/DAO/DataGraphVisitorsDemographicMongoAdapter";
+import { DataOrganizationTotalPeriodMongoAdapter } from "../../Infrastructure/DBAL/DAO/DataOrganizationTotalPeriodMongoAdapter";
 
 const IoC = {
   Settings: Symbol.for("Settings"),
@@ -33,6 +34,9 @@ const IoC = {
   ),
   IDataGraphVisitorsDemographicDAO: Symbol.for(
     "IDataGraphVisitorsDemographicDAO"
+  ),
+  IDataOrganizationTotalPeriodDAO: Symbol.for(
+    "IDataOrganizationTotalPeriodDAO"
   ),
 };
 
@@ -124,6 +128,15 @@ const DependenciesManager = (containerBuilder: ContainerBuilder) => {
       key: IoC.IDataGraphVisitorsDemographicDAO,
       value: (container: ContainerInterface) => {
         return new DataGraphVisitorsDemographicMongoAdapter({
+          adapter: container.get(IoC.MongoClient),
+          database: container.get(IoC.Settings).MONGODB_DATABASE,
+        });
+      },
+    },
+    {
+      key: IoC.IDataOrganizationTotalPeriodDAO,
+      value: (container: ContainerInterface) => {
+        return new DataOrganizationTotalPeriodMongoAdapter({
           adapter: container.get(IoC.MongoClient),
           database: container.get(IoC.Settings).MONGODB_DATABASE,
         });
