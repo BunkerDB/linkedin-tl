@@ -12,13 +12,16 @@ export declare type DataGraphsDataDimensionDTO = {
 };
 
 export declare type DataGraphsDataMetricsDTO = {
-  visitors?: DataGraphsDataMetricsVisitorsDTO[];
+  visitors?: DataGraphsDataMetricsVisitorsDTO;
   followers?: DataGraphsDataMetricsFollowersDTO;
   shares?: DataGraphsDataMetricsSharesDTO;
 };
 
 export declare type DataGraphsDataMetricsVisitorsDTO = {
-  page: string;
+  [key: string]: DataGraphsDataMetricsVisitorsPageDTO;
+};
+
+export declare type DataGraphsDataMetricsVisitorsPageDTO = {
   total_views: number;
   unique_views: number;
 };

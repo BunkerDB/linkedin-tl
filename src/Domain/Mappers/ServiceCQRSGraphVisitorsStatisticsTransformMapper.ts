@@ -57,17 +57,25 @@ export class ServiceCQRSGraphVisitorsStatisticsTransformMapper {
     > = PromiseB.map(
       Object.entries(args.post.totalPageStatistics.views),
       (row: [string, PageViewsDTO]) => {
-        return {
-          page: row[0],
+        const pageRow: DataGraphsDataMetricsVisitorsDTO = {};
+
+        pageRow[row[0]] = {
           total_views: row[1].pageViews,
           unique_views: row[1].uniquePageViews,
         };
+
+        return pageRow;
       }
     );
     return PromiseB.all(actionTransformVisitorsStatisticsMetrics).then(
       (metrics: DataGraphsDataMetricsVisitorsDTO[]) => {
+        const metricsVisitorsData: DataGraphsDataMetricsVisitorsDTO =
+          metrics.reduce((result, current) => {
+            return Object.assign(result, current);
+          }, {});
+
         return {
-          visitors: metrics,
+          visitors: metricsVisitorsData,
         };
       }
     );
