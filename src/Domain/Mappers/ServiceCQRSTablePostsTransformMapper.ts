@@ -24,6 +24,12 @@ declare type TablePostsTransformReactionsDTO = {
   reaction_praise: number;
 };
 
+declare type TablePostsTransformCustomMetricsDTO = {
+  average_ctr: number;
+  engagement_rate_impressions: number;
+  video_view_rate: number;
+};
+
 export class ServiceCQRSTablePostsTransformMapper {
   execute(args: {
     instance: string;
@@ -84,31 +90,44 @@ export class ServiceCQRSTablePostsTransformMapper {
   private transformMetrics(args: {
     assets: ReportRawDataAllInAssetsDTO;
   }): PromiseB<DataPostsMetricsDTO> {
-    return PromiseB.try(() => {
-      return this.transformMetricsReactions({
+    const actionReactions: PromiseB<TablePostsTransformReactionsDTO> =
+      this.transformMetricsReactions({
         reactionsRaw:
           (args.assets
             .reactions as LinkedInSocialMetadataResultsReactionsDTO) ?? [],
       });
-    }).then((reactions: TablePostsTransformReactionsDTO) => {
-      return {
-        share_count: args.assets.metrics?.totalShareStatistics?.shareCount ?? 0,
-        engagement: args.assets.metrics?.totalShareStatistics?.engagement ?? 0,
-        click_count: args.assets.metrics?.totalShareStatistics?.clickCount ?? 0,
-        like_count: args.assets.metrics?.totalShareStatistics?.likeCount ?? 0,
-        impression_count:
-          args.assets.metrics?.totalShareStatistics?.impressionCount ?? 0,
-        comment_count:
-          args.assets.metrics?.totalShareStatistics?.commentCount ?? 0,
-        reaction_appreciation: reactions.reaction_appreciation ?? 0,
-        reaction_empathy: reactions.reaction_empathy ?? 0,
-        reaction_interest: reactions.reaction_interest ?? 0,
-        reaction_like: reactions.reaction_like ?? 0,
-        reaction_maybe: reactions.reaction_maybe ?? 0,
-        reaction_praise: reactions.reaction_praise ?? 0,
-        video_views: args.assets.video_analytics?.value ?? 0,
-      };
-    });
+
+    const actionCustomMetrics: PromiseB<TablePostsTransformCustomMetricsDTO> =
+      this.calculateCustomMetrics(args);
+
+    return PromiseB.all([actionReactions, actionCustomMetrics]).then(
+      (result) => {
+        return {
+          share_count:
+            args.assets.metrics?.totalShareStatistics?.shareCount ?? 0,
+          engagement:
+            args.assets.metrics?.totalShareStatistics?.engagement ?? 0,
+          click_count:
+            args.assets.metrics?.totalShareStatistics?.clickCount ?? 0,
+          like_count: args.assets.metrics?.totalShareStatistics?.likeCount ?? 0,
+          impression_count:
+            args.assets.metrics?.totalShareStatistics?.impressionCount ?? 0,
+          comment_count:
+            args.assets.metrics?.totalShareStatistics?.commentCount ?? 0,
+          reaction_appreciation: result[0].reaction_appreciation ?? 0,
+          reaction_empathy: result[0].reaction_empathy ?? 0,
+          reaction_interest: result[0].reaction_interest ?? 0,
+          reaction_like: result[0].reaction_like ?? 0,
+          reaction_maybe: result[0].reaction_maybe ?? 0,
+          reaction_praise: result[0].reaction_praise ?? 0,
+          video_views: args.assets.video_analytics?.value ?? 0,
+          average_ctr: result[1].average_ctr ?? 0,
+          engagement_rate_impressions:
+            result[1].engagement_rate_impressions ?? 0,
+          video_view_rate: result[1].video_view_rate ?? 0,
+        };
+      }
+    );
   }
 
   private transformDimensionBase(args: {
@@ -186,6 +205,27 @@ export class ServiceCQRSTablePostsTransformMapper {
         reaction_praise: reactionSummaries
           ? reactionSummaries["PRAISE"]?.count ?? 0
           : 0,
+      };
+    });
+  }
+
+  private calculateCustomMetrics(args: {
+    assets: ReportRawDataAllInAssetsDTO;
+  }): PromiseB<TablePostsTransformCustomMetricsDTO> {
+    return PromiseB.try(() => {
+      return {
+        average_ctr:
+          (args.assets.metrics.totalShareStatistics?.clickCount /
+            args.assets.metrics.totalShareStatistics?.impressionCount) *
+            100 ?? 0,
+        engagement_rate_impressions:
+          (args.assets.metrics.totalShareStatistics?.engagement /
+            args.assets.metrics.totalShareStatistics?.impressionCount) *
+            100 ?? 0,
+        video_view_rate:
+          ((args.assets.video_analytics?.value ?? 0) /
+            args.assets.metrics.totalShareStatistics?.impressionCount) *
+            100 ?? 0,
       };
     });
   }

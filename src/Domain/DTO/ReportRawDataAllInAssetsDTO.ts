@@ -5,8 +5,8 @@ import { LinkedInOrganizationalEntityShareStatisticsElementsDTO } from "../../In
 
 export type ReportRawDataAllInAssetsDTO = {
   externalId: string;
-  reactions?: LinkedInSocialMetadataResultsReactionsDTO;
-  metrics?: LinkedInOrganizationalEntityShareStatisticsElementsDTO;
-  video_analytics?: LinkedInVideoAnalyticsElementsDTO;
-  media?: LinkedInMediaDataDTO;
+  reactions: LinkedInSocialMetadataResultsReactionsDTO;
+  metrics: LinkedInOrganizationalEntityShareStatisticsElementsDTO;
+  video_analytics: LinkedInVideoAnalyticsElementsDTO;
+  media: LinkedInMediaDataDTO;
 };
