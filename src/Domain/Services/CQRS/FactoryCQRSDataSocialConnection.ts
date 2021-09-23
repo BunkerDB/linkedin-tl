@@ -19,6 +19,8 @@ import { DataGraphFollowersStatisticsDAO } from "../../Repository/DAO/DataGraphF
 import { DataGraphSharesStatisticsDAO } from "../../Repository/DAO/DataGraphSharesStatisticsDAO";
 import { DataGraphFollowersDemographicDAO } from "../../Repository/DAO/DataGraphFollowersDemographicDAO";
 import { DataGraphVisitorsDemographicDAO } from "../../Repository/DAO/DataGraphVisitorsDemographicDAO";
+import { ServiceCQRSOrganizationData } from "./ServiceCQRSOrganizationData";
+import { DataOrganizationDataDAO } from "../../Repository/DAO/DataOrganizationDataDAO";
 
 export class FactoryCQRSDataSocialConnection {
   private readonly _container: ContainerInterface;
@@ -84,6 +86,14 @@ export class FactoryCQRSDataSocialConnection {
         return new ServiceCQRSTablePosts({
           adapter: new DataTablePostsDAO({
             adapter: this.container.get(IoC.IDataTablePostsDAO),
+          }),
+        }).execute({
+          rawRow: args.rawData,
+        });
+      case "ORGANIZATION_DATA":
+        return new ServiceCQRSOrganizationData({
+          adapter: new DataOrganizationDataDAO({
+            adapter: this.container.get(IoC.IDataOrganizationDataDAO),
           }),
         }).execute({
           rawRow: args.rawData,
