@@ -1,5 +1,4 @@
 import PromiseB from "bluebird";
-import moment from "moment";
 import { DimensionsDTO } from "../../DTO/DimensionsDTO";
 import { Dimension } from "../../Types/Dimension";
 import { ErrorDimensionNotFound } from "../../Error/ErrorDimensionNotFound";
@@ -18,6 +17,7 @@ import {
 } from "../../DTO/DataGraphsDemographicPeriodDTO";
 import { DataGraphsDemographicPeriodCreateInputDTO } from "../../DTO/DataGraphsDemographicPeriodCreateInputDTO";
 import { DataGraphsDemographicPeriodTransformInputDTO } from "../ServiceCQRSGraphVisitorsDemographicTransformMapper";
+import moment from "moment";
 
 export abstract class GraphsDemographicPeriodTransformMapperBase {
   abstract execute(
@@ -60,8 +60,10 @@ export abstract class GraphsDemographicPeriodTransformMapperBase {
         instance: args.instance,
         externalAccountId: args.externalAccountId,
         externalId: dimension.externalId,
-        startDate: args.startDate,
-        endDate: args.endDate,
+        startDate: new Date(
+          moment(args.startDate).format("YYYY-MM-DD 00:00:00")
+        ),
+        endDate: new Date(moment(args.endDate).format("YYYY-MM-DD 23:59:59")),
         periodId: args.periodId,
         edgeType: args.edge,
         edgeText: {
@@ -69,7 +71,6 @@ export abstract class GraphsDemographicPeriodTransformMapperBase {
           en: dimension.valueEN,
           pt: dimension.valuePT,
         },
-        date: new Date(moment().format("YYYY-MM-DD")),
       };
     });
   }
