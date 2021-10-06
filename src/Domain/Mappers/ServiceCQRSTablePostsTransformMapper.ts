@@ -28,6 +28,7 @@ declare type TablePostsTransformCustomMetricsDTO = {
   average_ctr: number;
   engagement_rate_impressions: number;
   video_view_rate: number;
+  interactions: number;
 };
 
 export class ServiceCQRSTablePostsTransformMapper {
@@ -125,6 +126,7 @@ export class ServiceCQRSTablePostsTransformMapper {
           engagement_rate_impressions:
             result[1].engagement_rate_impressions ?? 0,
           video_view_rate: result[1].video_view_rate ?? 0,
+          interactions: result[1].interactions ?? 0,
         };
       }
     );
@@ -226,6 +228,12 @@ export class ServiceCQRSTablePostsTransformMapper {
           ((args.assets.video_analytics?.value ?? 0) /
             args.assets.metrics.totalShareStatistics?.impressionCount) *
             100 ?? 0,
+        interactions:
+          (args.assets.metrics.totalShareStatistics?.clickCount ?? 0) +
+          (args.assets.metrics.totalShareStatistics?.shareCount ?? 0) +
+          (args.assets.metrics.totalShareStatistics?.commentCount ?? 0) +
+          (args.assets.metrics.totalShareStatistics?.likeCount ?? 0) +
+          (args.assets.video_analytics.value ?? 0),
       };
     });
   }
