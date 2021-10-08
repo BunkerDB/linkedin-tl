@@ -13,6 +13,7 @@ import { DataGraphSharesStatisticsMongoAdapter } from "../../Infrastructure/DBAL
 import { DataGraphFollowersDemographicMongoAdapter } from "../../Infrastructure/DBAL/DAO/DataGraphFollowersDemographicMongoAdapter";
 import { DataGraphVisitorsDemographicMongoAdapter } from "../../Infrastructure/DBAL/DAO/DataGraphVisitorsDemographicMongoAdapter";
 import { DataOrganizationDataMongoAdapter } from "../../Infrastructure/DBAL/DAO/DataOrganizationDataMongoAdapter";
+import { MongoClientOptions } from "mongodb";
 
 const IoC = {
   Settings: Symbol.for("Settings"),
@@ -62,7 +63,19 @@ const DependenciesManager = (containerBuilder: ContainerBuilder) => {
       key: IoC.MongoClient,
       value: (container: ContainerInterface) => {
         const settings: SettingsInterface = container.get(IoC.Settings);
-        return MongoDBClientDBAL.getInstance({ dsn: settings.MONGODB_DSN });
+        const options: MongoClientOptions = settings.MONGO_AMAZON
+          ? {
+              tls: true,
+              tlsCAFile: `${settings.MONGODB_CERTS_LOCAL_VOLUME}/rds-combined-ca-bundle.pem`,
+              tlsAllowInvalidHostnames: true,
+              retryWrites: false,
+            }
+          : {};
+
+        return MongoDBClientDBAL.getInstance({
+          dsn: settings.MONGODB_DSN,
+          options: options,
+        });
       },
     },
     {

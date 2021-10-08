@@ -72,6 +72,7 @@ export class Status extends ActionBase {
 
   private getDBMongoStatus(): PromiseB<any> {
     return PromiseB.try(() => {
+      //TODO: Fix Unhandled Rejection when Client isn't connect
       return this.container.get(IoC.MongoClient).connect();
     })
       .then((client: MongoClient) => {
