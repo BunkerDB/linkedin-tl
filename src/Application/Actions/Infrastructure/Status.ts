@@ -6,6 +6,7 @@ import { Span } from "opentracing";
 import { GroupOverview, ITopicMetadata, Kafka, SeekEntry } from "kafkajs";
 import { IoC } from "../../Dependencies";
 import { Document, ListDatabasesResult, MongoClient } from "mongodb";
+import * as fs from "fs";
 
 export class Status extends ActionBase {
   constructor(args: { container: ContainerInterface }) {
@@ -123,12 +124,18 @@ export class Status extends ActionBase {
       })
       .catch((e) => {
         console.log("[ERROR]", e);
+        const dsn: string = this.container.get(IoC.Settings).MONGO_AMAZON
+            ? this.container.get(IoC.Settings).MONGODB_DSN + "/?authSource=" + this.container.get(IoC.Settings).MONGODB_DATABASE + "&tls=true&retryWrites=false"
+            : this.container.get(IoC.Settings).MONGODB_DSN;
+        const pem_exists: boolean = fs.existsSync(`${this.container.get(IoC.Settings).MONGODB_CERTS_LOCAL_VOLUME}/rds-combined-ca-bundle.pem`);
         return {
           status: false,
           error: e,
           error1: JSON.stringify(e),
           error_message: e.message,
-          mongo_client:  JSON.stringify(this.container.get(IoC.MongoClient))
+          mongo_client:  JSON.stringify(this.container.get(IoC.MongoClient)),
+          dsn: dsn,
+          pem_exists:pem_exists
         };
       });
   }
