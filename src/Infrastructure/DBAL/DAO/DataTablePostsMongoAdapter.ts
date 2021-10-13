@@ -15,7 +15,7 @@ export class DataTablePostsMongoAdapter
   extends DataMongoAdapterBase
   implements IDataPostsDAO
 {
-  constructor(args: { adapter: MongoClient; database: string }) {
+  constructor(args: { adapter: Promise<MongoClient>; database: string }) {
     super(args);
     this.getConnection({ database: args.database, collection: "posts" });
   }

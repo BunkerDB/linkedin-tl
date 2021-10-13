@@ -1,17 +1,23 @@
 import { MongoClient, MongoClientOptions } from "mongodb";
 
 export class MongoDBClientDBAL {
-  private static instance: MongoClient;
+  private static instance: Promise<MongoClient>;
 
   static getInstance(args: {
     dsn: string;
     options: MongoClientOptions;
-  }): MongoClient {
+  }): Promise<MongoClient> {
     if (
       MongoDBClientDBAL.instance === undefined ||
       MongoDBClientDBAL.instance === null
     ) {
-      MongoDBClientDBAL.instance = new MongoClient(args.dsn, args.options);
+      MongoDBClientDBAL.instance = MongoClient.connect(args.dsn, args.options)
+        .then((client) => {
+          return client;
+        })
+        .catch((e) => {
+          throw e;
+        });
     }
 
     return MongoDBClientDBAL.instance;

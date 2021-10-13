@@ -15,7 +15,7 @@ export class DataGraphVisitorsDemographicMongoAdapter
   extends DataMongoAdapterBase
   implements IDataGraphsDemographicPeriodDAO
 {
-  constructor(args: { adapter: MongoClient; database: string }) {
+  constructor(args: { adapter: Promise<MongoClient>; database: string }) {
     super(args);
     this.getConnection({
       database: args.database,

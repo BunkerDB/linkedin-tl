@@ -3,13 +3,16 @@ import PromiseB from "bluebird";
 
 export abstract class DataMongoAdapterBase {
   private _collection: Collection | undefined;
-  private readonly _adapter: MongoClient;
+  private readonly _adapter: Promise<MongoClient>;
 
-  constructor(args: { adapter: MongoClient; database: string }) {
+  protected constructor(args: {
+    adapter: Promise<MongoClient>;
+    database: string;
+  }) {
     this._adapter = args.adapter;
   }
 
-  get adapter(): MongoClient {
+  get adapter(): Promise<MongoClient> {
     return this._adapter;
   }
 
@@ -26,9 +29,11 @@ export abstract class DataMongoAdapterBase {
     collection: string;
   }): void {
     PromiseB.try(() => {
-      return this.adapter.connect();
-    }).then((client: MongoClient) => {
-      this.collection = client.db(args.database).collection(args.collection);
-    });
+      return this.adapter;
+    })
+      .then((client: MongoClient) => {
+        this.collection = client.db(args.database).collection(args.collection);
+      })
+      .catch((_) => {});
   }
 }

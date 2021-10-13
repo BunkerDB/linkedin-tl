@@ -15,7 +15,7 @@ export class DataOrganizationDataMongoAdapter
   extends DataMongoAdapterBase
   implements IDataOrganizationDataDAO
 {
-  constructor(args: { adapter: MongoClient; database: string }) {
+  constructor(args: { adapter: Promise<MongoClient>; database: string }) {
     super(args);
     this.getConnection({
       database: args.database,
