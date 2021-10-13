@@ -125,7 +125,7 @@ export class Status extends ActionBase {
       .catch((e) => {
         console.log("[ERROR]", e);
         const dsn: string = this.container.get(IoC.Settings).MONGO_AMAZON
-            ? this.container.get(IoC.Settings).MONGODB_DSN + "/" + this.container.get(IoC.Settings).MONGODB_DATABASE + "?tls=true&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false"
+            ? this.container.get(IoC.Settings).MONGODB_DSN + "/" + this.container.get(IoC.Settings).MONGODB_DATABASE + "/?tls=true&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false"
             : this.container.get(IoC.Settings).MONGODB_DSN;
         const pem_exists: boolean = fs.existsSync(`${this.container.get(IoC.Settings).MONGODB_CERTS_LOCAL_VOLUME}/rds-combined-ca-bundle.pem`);
         return {
