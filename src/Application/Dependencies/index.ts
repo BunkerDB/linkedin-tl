@@ -69,8 +69,8 @@ const DependenciesManager = (containerBuilder: ContainerBuilder) => {
             }
           : {};
         const dsn: string = settings.MONGO_AMAZON
-          ? settings.MONGODB_DSN + "/?authSource=" + settings.MONGODB_DATABASE + "&tls=true&retryWrites=false"
-          : settings.MONGODB_DSN;
+            ? settings.MONGODB_DSN + "/" + settings.MONGODB_DATABASE + "?tls=true&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false"
+            : settings.MONGODB_DSN;
 
         return MongoDBClientDBAL.getInstance({
           dsn: dsn,
