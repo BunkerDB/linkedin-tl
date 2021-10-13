@@ -122,6 +122,7 @@ export class Status extends ActionBase {
         });
       })
       .catch((e) => {
+        console.log("[ERROR]", e);
         return {
           status: false,
           error: e.message ? e.message : e,
