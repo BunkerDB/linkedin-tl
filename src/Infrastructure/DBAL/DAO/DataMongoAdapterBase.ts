@@ -34,8 +34,6 @@ export abstract class DataMongoAdapterBase {
       .then((client: MongoClient) => {
         this.collection = client.db(args.database).collection(args.collection);
       })
-      .catch((e) => {
-        console.log("[ERROR]", e);
-      });
+      .catch((_) => {});
   }
 }

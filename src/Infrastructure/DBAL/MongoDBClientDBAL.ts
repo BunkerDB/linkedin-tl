@@ -16,7 +16,6 @@ export class MongoDBClientDBAL {
           return client;
         })
         .catch((e) => {
-          console.log("[ERROR]", e);
           throw e;
         });
     }
