@@ -125,9 +125,10 @@ export class Status extends ActionBase {
       .catch((e) => {
         console.log("[ERROR]", e);
         const dsn: string = this.container.get(IoC.Settings).MONGO_AMAZON
-            ? this.container.get(IoC.Settings).MONGODB_DSN + "/" + this.container.get(IoC.Settings).MONGODB_DATABASE + "/?tls=true&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false"
+            ? this.container.get(IoC.Settings).MONGODB_DSN + "/?authSource=" + this.container.get(IoC.Settings).MONGODB_DATABASE + "&tls=true&retryWrites=false"
             : this.container.get(IoC.Settings).MONGODB_DSN;
         const pem_exists: boolean = fs.existsSync(`${this.container.get(IoC.Settings).MONGODB_CERTS_LOCAL_VOLUME}/rds-combined-ca-bundle.pem`);
+        const pem_file = fs.readFileSync(`${this.container.get(IoC.Settings).MONGODB_CERTS_LOCAL_VOLUME}/rds-combined-ca-bundle.pem`,{encoding:'utf8', flag:'r'});
         return {
           status: false,
           error: e,
@@ -135,7 +136,8 @@ export class Status extends ActionBase {
           error_message: e.message,
           mongo_client:  JSON.stringify(this.container.get(IoC.MongoClient)),
           dsn: dsn,
-          pem_exists:pem_exists
+          pem_exists:pem_exists,
+          pem_file:pem_file
         };
       });
   }
