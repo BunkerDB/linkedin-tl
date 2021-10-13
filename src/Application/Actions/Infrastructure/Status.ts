@@ -126,6 +126,9 @@ export class Status extends ActionBase {
         return {
           status: false,
           error: e,
+          error1: JSON.stringify(e),
+          error_message: e.message,
+          mongo_client:  JSON.stringify(this.container.get(IoC.MongoClient))
         };
       });
   }
