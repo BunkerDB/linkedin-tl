@@ -66,10 +66,11 @@ const DependenciesManager = (containerBuilder: ContainerBuilder) => {
         const options: MongoClientOptions = settings.MONGO_AMAZON
           ? {
               tlsCAFile: `${settings.MONGODB_CERTS_LOCAL_VOLUME}/rds-combined-ca-bundle.pem`,
+              tlsAllowInvalidHostnames:true
             }
           : {};
         const dsn: string = settings.MONGO_AMAZON
-          ? settings.MONGODB_DSN + "/?authSource=" + settings.MONGODB_DATABASE + "&tls=true&retryWrites=false&tlsAllowInvalidHostnames=true"
+          ? settings.MONGODB_DSN + "/?authSource=" + settings.MONGODB_DATABASE + "&tls=true&retryWrites=false"
           : settings.MONGODB_DSN;
 
         return MongoDBClientDBAL.getInstance({
