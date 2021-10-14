@@ -22,9 +22,15 @@ export class Status extends ActionBase {
 
       return PromiseB.all([actionKafkaStatus, actionDBMongoStatus]).then(
         (result) => {
+          const statusCode: number =
+            result[0].status && result[1].status ? 200 : 500;
+
           return {
-            kafka: result[0],
-            mongo: result[1],
+            statusCode: statusCode,
+            data: {
+              kafka: result[0],
+              mongo: result[1],
+            },
           };
         }
       );
@@ -80,26 +86,27 @@ export class Status extends ActionBase {
           .admin()
           .listDatabases();
 
+        //TODO: Check what kind of data has to return (Count or rows)
         const actionFindPostsRows: Promise<Document[]> = client
-          .db("db_linkedin")
+          .db()
           .collection("posts")
           .find({})
           .toArray();
 
         const actionFindDataRows: Promise<Document[]> = client
-          .db("db_linkedin")
+          .db()
           .collection("graphs_data")
           .find({})
           .toArray();
 
         const actionFindDemographicRows: Promise<Document[]> = client
-          .db("db_linkedin")
+          .db()
           .collection("graphs_demographic")
           .find({})
           .toArray();
 
         const actionFindDemographicPeriodRows: Promise<Document[]> = client
-          .db("db_linkedin")
+          .db()
           .collection("graphs_demographic_period")
           .find({})
           .toArray();
@@ -117,7 +124,7 @@ export class Status extends ActionBase {
             graphs_data: result[2],
             graphs_demographic: result[3],
             graphs_demographic_period: result[4],
-            databases: result[0],
+            db: result[0],
           };
         });
       })

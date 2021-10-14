@@ -65,15 +65,19 @@ const DependenciesManager = (containerBuilder: ContainerBuilder) => {
         const settings: SettingsInterface = container.get(IoC.Settings);
         const options: MongoClientOptions = settings.MONGO_AMAZON
           ? {
+              tls: true,
+              tlsAllowInvalidHostnames: true,
               tlsCAFile: `${settings.MONGODB_CERTS_LOCAL_VOLUME}/rds-combined-ca-bundle.pem`,
+              directConnection: true,
+              retryWrites: false,
             }
-          : {};
-        const dsn: string = settings.MONGO_AMAZON
-          ? settings.MONGODB_DSN + "?tls=true&retryWrites=false"
-          : settings.MONGODB_DSN;
+          : {
+              authSource: "admin",
+              retryWrites: false,
+            };
 
         return MongoDBClientDBAL.getInstance({
-          dsn: dsn,
+          dsn: settings.MONGODB_DSN + settings.MONGODB_DATABASE,
           options: options,
         });
       },
