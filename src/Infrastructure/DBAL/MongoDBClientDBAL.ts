@@ -12,11 +12,10 @@ export class MongoDBClientDBAL {
       MongoDBClientDBAL.instance === null
     ) {
       MongoDBClientDBAL.instance = MongoClient.connect(args.dsn, args.options)
-        .then((client) => {
+        .then((client: MongoClient) => {
           return client;
         })
         .catch((e) => {
-          console.log("[ERROR]", e);
           throw e;
         });
     }

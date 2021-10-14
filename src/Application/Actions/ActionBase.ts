@@ -80,9 +80,15 @@ export abstract class ActionBase implements IAction {
   }): PromiseB<any>;
 
   protected postDoCall(args: { res: Response; result: any }): void {
-    args.res.status(200).json({
-      statusCode: 200,
-      data: args.result,
+    const statusCode: number =
+      args.result.statusCode !== undefined && args.result.statusCode !== null
+        ? args.result.statusCode
+        : 200;
+    const data: any = args.result.data ? args.result.data : args.result;
+
+    args.res.status(statusCode).json({
+      statusCode: statusCode,
+      data: data,
     });
   }
 

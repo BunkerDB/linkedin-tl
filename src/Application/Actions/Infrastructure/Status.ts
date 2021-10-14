@@ -23,9 +23,15 @@ export class Status extends ActionBase {
 
       return PromiseB.all([actionKafkaStatus, actionDBMongoStatus]).then(
         (result) => {
+          const statusCode: number =
+            result[0].status && result[1].status ? 200 : 500;
+
           return {
-            kafka: result[0],
-            mongo: result[1],
+            statusCode: statusCode,
+            data: {
+              kafka: result[0],
+              mongo: result[1],
+            },
           };
         }
       );
@@ -81,26 +87,27 @@ export class Status extends ActionBase {
           .admin()
           .listDatabases();
 
+        //TODO: Check what kind of data has to return (Count or rows)
         const actionFindPostsRows: Promise<Document[]> = client
-          .db("db_linkedin")
+          .db()
           .collection("posts")
           .find({})
           .toArray();
 
         const actionFindDataRows: Promise<Document[]> = client
-          .db("db_linkedin")
+          .db()
           .collection("graphs_data")
           .find({})
           .toArray();
 
         const actionFindDemographicRows: Promise<Document[]> = client
-          .db("db_linkedin")
+          .db()
           .collection("graphs_demographic")
           .find({})
           .toArray();
 
         const actionFindDemographicPeriodRows: Promise<Document[]> = client
-          .db("db_linkedin")
+          .db()
           .collection("graphs_demographic_period")
           .find({})
           .toArray();
@@ -118,17 +125,11 @@ export class Status extends ActionBase {
             graphs_data: result[2],
             graphs_demographic: result[3],
             graphs_demographic_period: result[4],
-            databases: result[0],
+            db: result[0],
           };
         });
       })
       .catch((e) => {
-        console.log("[ERROR]", e);
-        const dsn: string = this.container.get(IoC.Settings).MONGO_AMAZON
-            ? this.container.get(IoC.Settings).MONGODB_DSN + "/?authSource=" + this.container.get(IoC.Settings).MONGODB_DATABASE + "&tls=true&retryWrites=false"
-            : this.container.get(IoC.Settings).MONGODB_DSN;
-        const pem_exists: boolean = fs.existsSync(`${this.container.get(IoC.Settings).MONGODB_CERTS_LOCAL_VOLUME}/rds-combined-ca-bundle.pem`);
-        const pem_file = fs.readFileSync(`${this.container.get(IoC.Settings).MONGODB_CERTS_LOCAL_VOLUME}/rds-combined-ca-bundle.pem`,{encoding:'utf8', flag:'r'});
         return {
           status: false,
           error: e,
