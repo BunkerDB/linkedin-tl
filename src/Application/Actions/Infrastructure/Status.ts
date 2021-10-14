@@ -6,7 +6,6 @@ import { Span } from "opentracing";
 import { GroupOverview, ITopicMetadata, Kafka, SeekEntry } from "kafkajs";
 import { IoC } from "../../Dependencies";
 import { Document, ListDatabasesResult, MongoClient } from "mongodb";
-import * as fs from "fs";
 
 export class Status extends ActionBase {
   constructor(args: { container: ContainerInterface }) {
@@ -132,13 +131,7 @@ export class Status extends ActionBase {
       .catch((e) => {
         return {
           status: false,
-          error: e,
-          error1: JSON.stringify(e),
-          error_message: e.message,
-          mongo_client:  JSON.stringify(this.container.get(IoC.MongoClient)),
-          dsn: dsn,
-          pem_exists:pem_exists,
-          pem_file:pem_file
+          error: e.message ? e.message : e,
         };
       });
   }
