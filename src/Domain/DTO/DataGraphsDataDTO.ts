@@ -36,8 +36,10 @@ export declare type DataGraphsDataMetricsFollowersDTO = {
 export declare type DataGraphsDataMetricsSharesDTO = {
   share_count: number;
   engagement: number;
+  engagement_rate_impressions: number;
   click_count: number;
   like_count: number;
   impression_count: number;
+  unique_impressions_count: number;
   comment_count: number;
 };
