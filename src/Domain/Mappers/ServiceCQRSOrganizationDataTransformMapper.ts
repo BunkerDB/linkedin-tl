@@ -70,8 +70,12 @@ export class ServiceCQRSOrganizationDataTransformMapper {
   private transformDimensionProfilePicture(args: {
     rawRow: LinkedInOrganizationsDTO;
   }): PromiseB<string> {
+    const pictureAssets = args.rawRow?.logoV2
+      ? args.rawRow?.logoV2["original~"]?.elements ?? []
+      : [];
+
     const actionProfilePicture: PromiseB<string[]> = PromiseB.map(
-      args.rawRow.logoV2["original~"].elements ?? [],
+      pictureAssets,
       (asset: any) => {
         //If they wanted to store all pictures resolutions in the future, here is the place to put the logic
         return asset.identifiers[0].identifier;
@@ -86,8 +90,12 @@ export class ServiceCQRSOrganizationDataTransformMapper {
   private transformDimensionBackgroundPicture(args: {
     rawRow: LinkedInOrganizationsDTO;
   }): PromiseB<string> {
+    const pictureAssets = args.rawRow?.coverPhotoV2
+      ? args.rawRow?.coverPhotoV2["original~"]?.elements ?? []
+      : [];
+
     const actionProfilePicture: PromiseB<string[]> = PromiseB.map(
-      args.rawRow.coverPhotoV2["original~"].elements ?? [],
+      pictureAssets,
       (asset: any) => {
         //If they wanted to store all pictures resolutions in the future, here is the place to put the logic
         return asset.identifiers[0].identifier;
