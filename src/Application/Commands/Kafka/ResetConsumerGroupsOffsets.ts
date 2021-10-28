@@ -4,6 +4,7 @@ import { SettingsInterface, SettingsManager } from "../../Setting";
 import { IoC, DependenciesManager } from "../../Dependencies";
 import { ContainerInterface } from "../../Interface/ContainerInterface";
 import { LoggerInterface } from "../../../Infrastructure/Interface/LoggerInterface";
+import PromiseB from "bluebird";
 
 //SET-UP CONTAINER
 const containerBuilder = new ContainerBuilder();
@@ -18,19 +19,32 @@ DependenciesManager(containerBuilder);
 const container: ContainerInterface = containerBuilder.build();
 const settings: SettingsInterface = container.get(IoC.Settings);
 const logger: LoggerInterface = container.get(IoC.LoggerInterface);
-
 const kafka: Kafka = container.get(IoC.Kafka);
 const admin: Admin = kafka.admin();
+const instances: { groupId: string; topic: string }[] = [
+  {
+    groupId: settings.CONSUMER_GROUP_ID_TOPIC_00,
+    topic: settings.CONSUMER_SUBSCRIBE_TOPIC_00,
+  },
+];
+
 const run = async () => {
   await admin.connect();
-  await admin.createPartitions({
-    validateOnly: false,
-    topicPartitions: [
-      {
-        topic: settings.CONSUMER_GROUP_ID_TOPIC_00,
-        count: 4,
-      },
-    ],
+  const actions = PromiseB.map(instances, async (instance) => {
+    logger.info(instance);
+    await admin
+      .resetOffsets({
+        earliest: false,
+        groupId: instance.groupId,
+        topic: instance.topic,
+      })
+      .catch((error) => {
+        logger.error({ error: error });
+      });
+  });
+
+  await PromiseB.all(actions).catch((error) => {
+    logger.error({ error: error });
   });
   await admin.disconnect();
   process.exit(0);
