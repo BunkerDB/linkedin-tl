@@ -2,11 +2,11 @@ import PromiseB from "bluebird";
 import { ReportRawDataAllInDTO } from "../../DTO/ReportRawDataAllInDTO";
 import { IDataGraphsDemographicDAO } from "../../Interfaces/IDataGraphsDemographicDAO";
 import { DataGraphsDemographicCreateInputDTO } from "../../DTO/DataGraphsDemographicCreateInputDTO";
-import { LinkedInFollowersRawDataDTO } from "../../DTO/LinkedInFollowersRawDataDTO";
 import { ServiceCQRSGraphFollowersDemographicTransformMapper } from "../../Mappers/ServiceCQRSGraphFollowersDemographicTransformMapper";
 import { DimensionsDTO } from "../../DTO/DimensionsDTO";
 import _ from "lodash";
 import { ErrorEmptyDimensionsInPeriod } from "../../Error/ErrorEmptyDimensionsInPeriod";
+import { FollowersDemographicRawDataAllInRowDTO } from "../../DTO/FollowersDemographicRawDataAllInRowDTO";
 
 export class ServiceCQRSGraphFollowersDemographic {
   private readonly _adapter: IDataGraphsDemographicDAO;
@@ -23,9 +23,7 @@ export class ServiceCQRSGraphFollowersDemographic {
     return PromiseB.try(() => {
       return this.transform(args);
     }).then(
-      (
-        dataGraphFollowersDemographic: DataGraphsDemographicCreateInputDTO[]
-      ) => {
+      (dataGraphFollowersDemographic: DataGraphsDemographicCreateInputDTO) => {
         return this.load({ data: dataGraphFollowersDemographic });
       }
     );
@@ -33,9 +31,9 @@ export class ServiceCQRSGraphFollowersDemographic {
 
   private transform(args: {
     rawRow: ReportRawDataAllInDTO;
-  }): PromiseB<DataGraphsDemographicCreateInputDTO[]> {
-    const rawRow: LinkedInFollowersRawDataDTO = args.rawRow
-      .data as unknown as LinkedInFollowersRawDataDTO;
+  }): PromiseB<DataGraphsDemographicCreateInputDTO> {
+    const rawRow: FollowersDemographicRawDataAllInRowDTO = args.rawRow
+      .data as unknown as FollowersDemographicRawDataAllInRowDTO;
 
     return PromiseB.try(() => {
       const dimensions: DimensionsDTO[] = JSON.parse(
@@ -47,41 +45,21 @@ export class ServiceCQRSGraphFollowersDemographic {
         dimensions: dimensions,
       });
     }).then((dimensions: DimensionsDTO[]) => {
-      const actionTransformGraphFollowersDemographic: PromiseB<
-        DataGraphsDemographicCreateInputDTO[][]
-      > = PromiseB.map(rawRow.followersRawData, (followersRawData) => {
-        return new ServiceCQRSGraphFollowersDemographicTransformMapper().execute(
-          {
-            instance: args.rawRow.instance,
-            externalAccountId: args.rawRow.organization,
-            totalFollowers: rawRow.totalFollowers,
-            dimensions: dimensions,
-            rawRow: followersRawData,
-          }
-        );
+      return new ServiceCQRSGraphFollowersDemographicTransformMapper().execute({
+        instance: args.rawRow.instance,
+        externalAccountId: args.rawRow.organization,
+        totalFollowers: rawRow.total ?? 0,
+        dimensions: dimensions,
+        rawRow: args.rawRow.data,
+        edge: args.rawRow.edge,
       });
-
-      return PromiseB.all(actionTransformGraphFollowersDemographic).then(
-        (result: DataGraphsDemographicCreateInputDTO[][]) => {
-          return result.flat();
-        }
-      );
     });
   }
 
   private load(args: {
-    data: DataGraphsDemographicCreateInputDTO[];
+    data: DataGraphsDemographicCreateInputDTO;
   }): PromiseB<boolean> {
-    const actionLoadGraphFollowersDemographic: PromiseB<boolean[]> =
-      PromiseB.map(args.data, (row: DataGraphsDemographicCreateInputDTO) => {
-        return this.adapter.upsert({ input: row });
-      });
-
-    return PromiseB.all(actionLoadGraphFollowersDemographic).then(
-      (result: boolean[]) => {
-        return result.every((status: boolean) => status);
-      }
-    );
+    return this.adapter.upsert({ input: args.data });
   }
 
   private validateDimensions(args: {

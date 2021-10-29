@@ -11,8 +11,8 @@ export declare type StaffCountRangeDimensionDTO = {
 export abstract class ServiceCreateStaffCountDimensionBase {
   abstract execute(args: {
     rawRows:
-      | PageStatisticsByStaffCountRangeDTO[]
-      | FollowerCountsByStaffCountRangeDTO[];
+      | PageStatisticsByStaffCountRangeDTO
+      | FollowerCountsByStaffCountRangeDTO;
   }): PromiseB<DimensionsDTO[]>;
 
   protected getTranslations(): PromiseB<StaffCountRangeDimensionDTO> {

@@ -22,7 +22,7 @@ import moment from "moment";
 export abstract class GraphsDemographicPeriodTransformMapperBase {
   abstract execute(
     args: DataGraphsDemographicPeriodTransformInputDTO
-  ): PromiseB<DataGraphsDemographicPeriodCreateInputDTO[]>;
+  ): PromiseB<DataGraphsDemographicPeriodCreateInputDTO>;
 
   protected transformDimension(args: {
     edge: Dimension;

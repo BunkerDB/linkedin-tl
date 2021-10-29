@@ -5,7 +5,7 @@ import { ContainerInterface } from "../../Interface/ContainerInterface";
 import { Span } from "opentracing";
 import { GroupOverview, ITopicMetadata, Kafka, SeekEntry } from "kafkajs";
 import { IoC } from "../../Dependencies";
-import { Document, ListDatabasesResult, MongoClient } from "mongodb";
+import { ListDatabasesResult, MongoClient } from "mongodb";
 
 export class Status extends ActionBase {
   constructor(args: { container: ContainerInterface }) {
@@ -87,29 +87,25 @@ export class Status extends ActionBase {
           .listDatabases();
 
         //TODO: Check what kind of data has to return (Count or rows)
-        const actionFindPostsRows: Promise<Document[]> = client
+        const actionFindPostsRows: Promise<number> = client
           .db()
           .collection("posts")
-          .find({})
-          .toArray();
+          .count({});
 
-        const actionFindDataRows: Promise<Document[]> = client
+        const actionFindDataRows: Promise<number> = client
           .db()
           .collection("graphs_data")
-          .find({})
-          .toArray();
+          .count({});
 
-        const actionFindDemographicRows: Promise<Document[]> = client
+        const actionFindDemographicRows: Promise<number> = client
           .db()
           .collection("graphs_demographic")
-          .find({})
-          .toArray();
+          .count({});
 
-        const actionFindDemographicPeriodRows: Promise<Document[]> = client
+        const actionFindDemographicPeriodRows: Promise<number> = client
           .db()
           .collection("graphs_demographic_period")
-          .find({})
-          .toArray();
+          .count({});
 
         return PromiseB.all([
           actionListDatabases,

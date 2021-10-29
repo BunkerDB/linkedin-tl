@@ -15,7 +15,9 @@
     "watch:ts": "npx tsc -w",
     "watch:task:web": "nodemon src/index.ts",
     "watch:task:00": "nodemon src/Application/EventHandler/Task00/handler.ts",
-    "prettier": "npx prettier --write ."
+    "prettier": "npx prettier --write .",
+    "start-dev:command:kafka:topics:partition": "ts-node src/Application/Commands/Kafka/CreatePartitionTopic.ts",
+    "start-dev:command:kafka:consumer_group_offsets:reset": "ts-node src/Application/Commands/Kafka/ResetConsumerGroupsOffsets.ts"
   },
   "keywords": [],
   "author": "",

@@ -13,45 +13,40 @@ import { ServiceCreateFollowersStaffCountDimension } from "../../Services/Dimens
 export class GraphsDemographicStaffCountRangeTransformMapper extends GraphsDemographicTransformMapperBase {
   execute(
     args: DataGraphsDemographicTransformInputDTO
-  ): PromiseB<DataGraphsDemographicCreateInputDTO[]> {
+  ): PromiseB<DataGraphsDemographicCreateInputDTO> {
     return PromiseB.try(() => {
       return new ServiceCreateFollowersStaffCountDimension().execute({
-        rawRows: args.rawRow as FollowerCountsByStaffCountRangeDTO[],
+        rawRows: args.rawRow as FollowerCountsByStaffCountRangeDTO,
       });
     }).then((dimensions: DimensionsDTO[]) => {
-      return PromiseB.map(
-        args.rawRow as unknown as FollowerCountsByStaffCountRangeDTO[],
-        (rawRow: FollowerCountsByStaffCountRangeDTO) => {
-          const actionTransformDimension: PromiseB<DataGraphsDemographicDimensionDTO> =
-            this.transformDimension({
-              edge: "STAFF_COUNT_RANGE",
-              instance: args.instance,
-              externalAccountId: args.externalAccountId,
-              rawRow: rawRow,
-              dimensions: dimensions,
-            });
-          const actionTransformMetrics: PromiseB<DataGraphsDemographicMetricsDTO> =
-            this.transformMetrics({
-              lifetimeFollowers: args.totalFollowers,
-              rawRow: rawRow,
-            });
+      const actionTransformDimension: PromiseB<DataGraphsDemographicDimensionDTO> =
+        this.transformDimension({
+          edge: "STAFF_COUNT_RANGE",
+          instance: args.instance,
+          externalAccountId: args.externalAccountId,
+          rawRow: args.rawRow,
+          dimensions: dimensions,
+        });
+      const actionTransformMetrics: PromiseB<DataGraphsDemographicMetricsDTO> =
+        this.transformMetrics({
+          lifetimeFollowers: args.totalFollowers,
+          rawRow: args.rawRow,
+        });
 
-          return PromiseB.all([
-            actionTransformDimension,
-            actionTransformMetrics,
-          ]).then(
-            (
-              result: [
-                DataGraphsDemographicDimensionDTO,
-                DataGraphsDemographicMetricsDTO
-              ]
-            ) => {
-              return {
-                dimension: result[0],
-                metrics: result[1],
-              };
-            }
-          );
+      return PromiseB.all([
+        actionTransformDimension,
+        actionTransformMetrics,
+      ]).then(
+        (
+          result: [
+            DataGraphsDemographicDimensionDTO,
+            DataGraphsDemographicMetricsDTO
+          ]
+        ) => {
+          return {
+            dimension: result[0],
+            metrics: result[1],
+          };
         }
       );
     });

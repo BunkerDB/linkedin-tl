@@ -9,31 +9,25 @@ import { FollowerCountsByStaffCountRangeDTO } from "../../../Infrastructure/DTO/
 
 export class ServiceCreateFollowersStaffCountDimension extends ServiceCreateStaffCountDimensionBase {
   execute(args: {
-    rawRows: FollowerCountsByStaffCountRangeDTO[];
+    rawRows: FollowerCountsByStaffCountRangeDTO;
   }): PromiseB<DimensionsDTO[]> {
     return PromiseB.try(() => {
       return this.getTranslations();
     }).then((translationsStaffCount: StaffCountRangeDimensionDTO) => {
-      const actionStaffCountDimension: PromiseB<DimensionsDTO[]> = PromiseB.map(
-        args.rawRows,
-        (rawRow) => {
-          return {
-            id: rawRow.staffCountRange,
-            type: "STAFF_COUNT_RANGE",
-            externalId: rawRow.staffCountRange,
-            valueES: translationsStaffCount[rawRow.staffCountRange]?.es ?? "",
-            valueEN: translationsStaffCount[rawRow.staffCountRange]?.en ?? "",
-            valuePT: translationsStaffCount[rawRow.staffCountRange]?.pt ?? "",
-            createdAt: new Date(moment().format()),
-          } as DimensionsDTO;
-        }
-      );
-
-      return PromiseB.all(actionStaffCountDimension).then(
-        (result: DimensionsDTO[]) => {
-          return result;
-        }
-      );
+      return [
+        {
+          id: args.rawRows.staffCountRange,
+          type: "STAFF_COUNT_RANGE",
+          externalId: args.rawRows.staffCountRange,
+          valueES:
+            translationsStaffCount[args.rawRows.staffCountRange]?.es ?? "",
+          valueEN:
+            translationsStaffCount[args.rawRows.staffCountRange]?.en ?? "",
+          valuePT:
+            translationsStaffCount[args.rawRows.staffCountRange]?.pt ?? "",
+          createdAt: new Date(moment().format()),
+        },
+      ] as DimensionsDTO[];
     });
   }
 }

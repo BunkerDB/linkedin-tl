@@ -22,7 +22,7 @@ import { ErrorDimensionNotFound } from "../../Error/ErrorDimensionNotFound";
 export abstract class GraphsDemographicTransformMapperBase {
   abstract execute(
     args: DataGraphsDemographicTransformInputDTO
-  ): PromiseB<DataGraphsDemographicCreateInputDTO[]>;
+  ): PromiseB<DataGraphsDemographicCreateInputDTO>;
 
   protected transformDimension(args: {
     edge: Dimension;

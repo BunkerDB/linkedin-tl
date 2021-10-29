@@ -21,6 +21,7 @@ import { DataGraphFollowersDemographicDAO } from "../../Repository/DAO/DataGraph
 import { DataGraphVisitorsDemographicDAO } from "../../Repository/DAO/DataGraphVisitorsDemographicDAO";
 import { ServiceCQRSOrganizationData } from "./ServiceCQRSOrganizationData";
 import { DataOrganizationDataDAO } from "../../Repository/DAO/DataOrganizationDataDAO";
+import { ElementEdge } from "../../Types/ElementEdge";
 
 export class FactoryCQRSDataSocialConnection {
   private readonly _container: ContainerInterface;
@@ -39,70 +40,90 @@ export class FactoryCQRSDataSocialConnection {
     | boolean //DataPostsDTO
     | false
   > {
-    switch (args.rawData.edge) {
-      case "GRAPH_VISITORS_DEMOGRAPHIC":
-        return new ServiceCQRSGraphVisitorsDemographic({
-          adapter: new DataGraphVisitorsDemographicDAO({
-            adapter: this.container.get(IoC.IDataGraphVisitorsDemographicDAO),
-          }),
-        }).execute({
-          rawRow: args.rawData,
-        });
-      case "GRAPH_VISITORS_STATISTICS":
-        return new ServiceCQRSGraphVisitorsStatistics({
-          adapter: new DataGraphVisitorsStatisticsDAO({
-            adapter: this.container.get(IoC.IDataGraphVisitorsStatisticsDAO),
-          }),
-        }).execute({
-          rawRow: args.rawData,
-        });
+    return PromiseB.try(() => {
+      return this.getEdge({ edge: args.rawData.edge });
+    }).then((edge: ElementEdge | undefined) => {
+      switch (edge) {
+        case "GRAPH_VISITORS_DEMOGRAPHIC":
+          return new ServiceCQRSGraphVisitorsDemographic({
+            adapter: new DataGraphVisitorsDemographicDAO({
+              adapter: this.container.get(IoC.IDataGraphVisitorsDemographicDAO),
+            }),
+          }).execute({
+            rawRow: args.rawData,
+          });
+        case "GRAPH_VISITORS_STATISTICS":
+          return new ServiceCQRSGraphVisitorsStatistics({
+            adapter: new DataGraphVisitorsStatisticsDAO({
+              adapter: this.container.get(IoC.IDataGraphVisitorsStatisticsDAO),
+            }),
+          }).execute({
+            rawRow: args.rawData,
+          });
 
-      case "GRAPH_SHARES_STATISTICS":
-        return new ServiceCQRSGraphSharesStatistics({
-          adapter: new DataGraphSharesStatisticsDAO({
-            adapter: this.container.get(IoC.IDataGraphSharesStatisticsDAO),
-          }),
-        }).execute({
-          rawRow: args.rawData,
-        });
+        case "GRAPH_SHARES_STATISTICS":
+          return new ServiceCQRSGraphSharesStatistics({
+            adapter: new DataGraphSharesStatisticsDAO({
+              adapter: this.container.get(IoC.IDataGraphSharesStatisticsDAO),
+            }),
+          }).execute({
+            rawRow: args.rawData,
+          });
 
-      case "GRAPH_FOLLOWERS_DEMOGRAPHIC":
-        return new ServiceCQRSGraphFollowersDemographic({
-          adapter: new DataGraphFollowersDemographicDAO({
-            adapter: this.container.get(IoC.IDataGraphFollowersDemographicDAO),
-          }),
-        }).execute({
-          rawRow: args.rawData,
-        });
-      case "GRAPH_FOLLOWERS_STATISTICS":
-        return new ServiceCQRSGraphFollowersStatistics({
-          adapter: new DataGraphFollowersStatisticsDAO({
-            adapter: this.container.get(IoC.IDataGraphFollowersStatisticsDAO),
-          }),
-        }).execute({
-          rawRow: args.rawData,
-        });
-      case "TABLE_POSTS":
-        return new ServiceCQRSTablePosts({
-          adapter: new DataTablePostsDAO({
-            adapter: this.container.get(IoC.IDataTablePostsDAO),
-          }),
-        }).execute({
-          rawRow: args.rawData,
-        });
-      case "ORGANIZATION_DATA":
-        return new ServiceCQRSOrganizationData({
-          adapter: new DataOrganizationDataDAO({
-            adapter: this.container.get(IoC.IDataOrganizationDataDAO),
-          }),
-        }).execute({
-          rawRow: args.rawData,
-        });
-      default:
-        throw new ErrorDomainBase({
-          code: 500,
-          message: `Error in the ${this.constructor.name}.execute(rawData: ReportRawDataAllInDTO) -> Edge is not valid.`,
-        });
-    }
+        case "GRAPH_FOLLOWERS_DEMOGRAPHIC":
+          return new ServiceCQRSGraphFollowersDemographic({
+            adapter: new DataGraphFollowersDemographicDAO({
+              adapter: this.container.get(
+                IoC.IDataGraphFollowersDemographicDAO
+              ),
+            }),
+          }).execute({
+            rawRow: args.rawData,
+          });
+        case "GRAPH_FOLLOWERS_STATISTICS":
+          return new ServiceCQRSGraphFollowersStatistics({
+            adapter: new DataGraphFollowersStatisticsDAO({
+              adapter: this.container.get(IoC.IDataGraphFollowersStatisticsDAO),
+            }),
+          }).execute({
+            rawRow: args.rawData,
+          });
+        case "TABLE_POSTS":
+          return new ServiceCQRSTablePosts({
+            adapter: new DataTablePostsDAO({
+              adapter: this.container.get(IoC.IDataTablePostsDAO),
+            }),
+          }).execute({
+            rawRow: args.rawData,
+          });
+        case "ORGANIZATION_DATA":
+          return new ServiceCQRSOrganizationData({
+            adapter: new DataOrganizationDataDAO({
+              adapter: this.container.get(IoC.IDataOrganizationDataDAO),
+            }),
+          }).execute({
+            rawRow: args.rawData,
+          });
+        default:
+          throw new ErrorDomainBase({
+            code: 500,
+            message: `Error in the ${this.constructor.name}.execute(rawData: ReportRawDataAllInDTO) -> Edge: ${edge} is not valid.`,
+          });
+      }
+    });
+  }
+
+  private getEdge(args: {
+    edge: ElementEdge;
+  }): PromiseB<ElementEdge | undefined> {
+    return PromiseB.try(() => {
+      if (args.edge.includes("GRAPH_VISITORS_DEMOGRAPHIC")) {
+        return "GRAPH_VISITORS_DEMOGRAPHIC";
+      } else if (args.edge.includes("GRAPH_FOLLOWERS_DEMOGRAPHIC")) {
+        return "GRAPH_FOLLOWERS_DEMOGRAPHIC";
+      }
+
+      return args.edge;
+    });
   }
 }
