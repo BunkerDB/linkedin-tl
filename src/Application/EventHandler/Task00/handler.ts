@@ -90,7 +90,7 @@ const run = async () => {
           });
         },
         {
-          concurrency: 10,
+          concurrency: 2,
         }
       );
       return PromiseB.all(actions)
