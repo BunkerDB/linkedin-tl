@@ -27,8 +27,8 @@ const run = async () => {
     validateOnly: false,
     topicPartitions: [
       {
-        topic: settings.CONSUMER_GROUP_ID_TOPIC_00,
-        count: 4,
+        topic: settings.CONSUMER_SUBSCRIBE_TOPIC_00,
+        count: 2,
       },
     ],
   });

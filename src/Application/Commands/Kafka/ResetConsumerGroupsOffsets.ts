@@ -30,18 +30,26 @@ const instances: { groupId: string; topic: string }[] = [
 
 const run = async () => {
   await admin.connect();
-  const actions = PromiseB.map(instances, async (instance) => {
-    logger.info(instance);
-    await admin
-      .resetOffsets({
-        earliest: false,
-        groupId: instance.groupId,
-        topic: instance.topic,
-      })
-      .catch((error) => {
-        logger.error({ error: error });
-      });
-  });
+  const actions = PromiseB.map(
+    instances,
+    (instance) => {
+      logger.info(instance);
+      return PromiseB.try(() => {
+        admin
+          .resetOffsets({
+            earliest: false,
+            groupId: instance.groupId,
+            topic: instance.topic,
+          })
+          .catch((error) => {
+            logger.error({ error: error });
+          });
+      }).delay(1000);
+    },
+    {
+      concurrency: 1,
+    }
+  );
 
   await PromiseB.all(actions).catch((error) => {
     logger.error({ error: error });
