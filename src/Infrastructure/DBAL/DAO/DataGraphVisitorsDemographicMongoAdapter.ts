@@ -1,4 +1,5 @@
 import PromiseB from "bluebird";
+import moment from "moment";
 import {
   Document,
   Filter,
@@ -39,8 +40,11 @@ export class DataGraphVisitorsDemographicMongoAdapter
         $set: {
           dimension: args.input.dimension,
           "metrics.visitors": args.input.metrics.visitors,
+          updatedAt: new Date(moment().utc(false).format()),
         },
-        $currentDate: { lastModified: true },
+        $setOnInsert: {
+          createdAt: new Date(moment().utc(false).format()),
+        },
       };
       const options: UpdateOptions = { upsert: true };
 

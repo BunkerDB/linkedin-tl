@@ -61,9 +61,11 @@ export abstract class GraphsDemographicPeriodTransformMapperBase {
         externalAccountId: args.externalAccountId,
         externalId: dimension.externalId,
         startDate: new Date(
-          moment(args.startDate).format("YYYY-MM-DD 00:00:00")
+          moment(args.startDate).utc(false).format("YYYY-MM-DD 00:00:00")
         ),
-        endDate: new Date(moment(args.endDate).format("YYYY-MM-DD 23:59:59")),
+        endDate: new Date(
+          moment(args.endDate).utc(false).format("YYYY-MM-DD 23:59:59")
+        ),
         periodId: args.periodId,
         edgeType: args.edge,
         edgeText: {

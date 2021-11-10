@@ -10,6 +10,7 @@ import PromiseB from "bluebird";
 import { IDataOrganizationDataDAO } from "../../../Domain/Interfaces/IDataOrganizationDataDAO";
 import { DataOrganizationDataCreateInputDTO } from "../../../Domain/DTO/DataOrganizationDataCreateInputDTO";
 import { DataOrganizationDataDTO } from "../../../Domain/DTO/DataOrganizationDataDTO";
+import moment from "moment";
 
 export class DataOrganizationDataMongoAdapter
   extends DataMongoAdapterBase
@@ -33,8 +34,11 @@ export class DataOrganizationDataMongoAdapter
       const update: UpdateFilter<Document> | Partial<Document> = {
         $set: {
           dimension: args.input.dimension,
+          updatedAt: new Date(moment().utc(false).format()),
         },
-        $currentDate: { lastModified: true },
+        $setOnInsert: {
+          createdAt: new Date(moment().utc(false).format()),
+        },
       };
       const options: UpdateOptions = { upsert: true };
 

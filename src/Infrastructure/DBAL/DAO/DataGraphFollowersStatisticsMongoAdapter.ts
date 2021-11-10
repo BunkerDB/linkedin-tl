@@ -10,6 +10,7 @@ import { IDataGraphsDataDAO } from "../../../Domain/Interfaces/IDataGraphsDataDA
 import { DataGraphsDataCreateInputDTO } from "../../../Domain/DTO/DataGraphsDataCreateInputDTO";
 import { DataGraphsDataDTO } from "../../../Domain/DTO/DataGraphsDataDTO";
 import { DataMongoAdapterBase } from "./DataMongoAdapterBase";
+import moment from "moment";
 
 export class DataGraphFollowersStatisticsMongoAdapter
   extends DataMongoAdapterBase
@@ -31,8 +32,11 @@ export class DataGraphFollowersStatisticsMongoAdapter
         $set: {
           dimension: args.input.dimension,
           "metrics.followers": args.input.metrics.followers,
+          updatedAt: new Date(moment().utc(false).format()),
         },
-        $currentDate: { lastModified: true },
+        $setOnInsert: {
+          createdAt: new Date(moment().utc(false).format()),
+        },
       };
       const options: UpdateOptions = { upsert: true };
 

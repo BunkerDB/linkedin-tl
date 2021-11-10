@@ -10,6 +10,7 @@ import {
 import { DataPostsCreateInputDTO } from "../../../Domain/DTO/DataPostsCreateInputDTO";
 import { DataPostsDTO } from "../../../Domain/DTO/DataPostsDTO";
 import { DataMongoAdapterBase } from "./DataMongoAdapterBase";
+import moment from "moment";
 
 export class DataTablePostsMongoAdapter
   extends DataMongoAdapterBase
@@ -31,8 +32,11 @@ export class DataTablePostsMongoAdapter
         $set: {
           dimension: args.input.dimension,
           metrics: args.input.metrics,
+          updatedAt: new Date(moment().utc(false).format()),
         },
-        $currentDate: { lastModified: true },
+        $setOnInsert: {
+          createdAt: new Date(moment().utc(false).format()),
+        },
       };
       const options: UpdateOptions = { upsert: true };
 
