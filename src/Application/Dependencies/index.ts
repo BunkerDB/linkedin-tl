@@ -14,6 +14,9 @@ import { DataGraphFollowersDemographicMongoAdapter } from "../../Infrastructure/
 import { DataGraphVisitorsDemographicMongoAdapter } from "../../Infrastructure/DBAL/DAO/DataGraphVisitorsDemographicMongoAdapter";
 import { DataOrganizationDataMongoAdapter } from "../../Infrastructure/DBAL/DAO/DataOrganizationDataMongoAdapter";
 import { MongoClientOptions } from "mongodb";
+import { S3 } from "aws-sdk";
+import { AWSFileUploader } from "../../Infrastructure/Storage/AWSFileUploader";
+import { PutObjectRequest } from "aws-sdk/clients/s3";
 
 const IoC = {
   Settings: Symbol.for("Settings"),
@@ -22,6 +25,8 @@ const IoC = {
   Kafka: Symbol.for("Kafka"),
   MongoClient: Symbol.for("MongoClient"),
   HttpClient: Symbol.for("HttpClient"),
+  AWSClient: Symbol.for("AWSClient"),
+  IFileUploader: Symbol.for("IFileUploader"),
   IDataTablePostsDAO: Symbol.for("IDataTablePostsDAO"),
   IDataGraphFollowersStatisticsDAO: Symbol.for(
     "IDataGraphFollowersStatisticsDAO"
@@ -154,6 +159,27 @@ const DependenciesManager = (containerBuilder: ContainerBuilder) => {
         return new DataOrganizationDataMongoAdapter({
           adapter: container.get(IoC.MongoClient),
           database: container.get(IoC.Settings).MONGODB_DATABASE,
+        });
+      },
+    },
+    {
+      key: IoC.AWSClient,
+      value: (container: ContainerInterface) => {
+        const settings: SettingsInterface = container.get(IoC.Settings);
+        //TODO:
+        return new S3({
+          accessKeyId: settings.AWS_KEY_ID,
+          secretAccessKey: settings.AWS_SECRET_KEY,
+          region: settings.AWS_REGION,
+        });
+      },
+    },
+    {
+      key: IoC.IFileUploader,
+      value: (container: ContainerInterface) => {
+        return new AWSFileUploader({
+          adapter: container.get(IoC.AWSClient),
+          logger: container.get(IoC.LoggerInterface),
         });
       },
     },
