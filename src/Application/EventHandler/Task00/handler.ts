@@ -38,7 +38,9 @@ containerBuilder.addDefinitions([
       };
       const options: TracingOptions = {
         logger: {
-          info(_: string) {},
+          info(msg: string) {
+            _logger.info({ message: msg });
+          },
           error(msg: string) {
             _logger.error({ error: msg });
           },

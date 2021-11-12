@@ -57,7 +57,9 @@ export class HttpAttempt implements HttpInterface {
         service: this.constructor.name,
         method: "GET",
       });
-      await PromiseB.try(() => {}).delay(delay * 1000);
+      await PromiseB.try(() => {
+        return;
+      }).delay(delay * 1000);
       attempt++;
     } while (true);
   }
@@ -86,7 +88,9 @@ export class HttpAttempt implements HttpInterface {
         service: this.constructor.name,
         method: "POST",
       });
-      await PromiseB.try(() => {}).delay(delay * 1000);
+      await PromiseB.try(() => {
+        return;
+      }).delay(delay * 1000);
       attempt++;
     } while (true);
   }
