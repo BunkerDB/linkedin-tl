@@ -59,8 +59,7 @@ export abstract class ActionBase implements IAction {
         span.finish();
       })
       .catch((error: any) => {
-        //MANEJO DE ERROR
-        //TODO:
+        //TODO: MANEJO DE ERROR
         //const error = ActionErrorFactory.create(reject, req, res);
         span.setTag(Tags.ERROR, true);
         span.setTag(Tags.HTTP_STATUS_CODE, error.statusCode || 500);

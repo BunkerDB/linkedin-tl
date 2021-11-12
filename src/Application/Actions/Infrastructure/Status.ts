@@ -86,7 +86,6 @@ export class Status extends ActionBase {
           .admin()
           .listDatabases();
 
-        //TODO: Check what kind of data has to return (Count or rows)
         const actionFindPostsRows: Promise<number> = client
           .db()
           .collection("posts")

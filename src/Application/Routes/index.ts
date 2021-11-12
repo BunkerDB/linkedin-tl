@@ -19,7 +19,6 @@ const RouteManager = (app: Application, container: ContainerInterface) => {
       pattern: "/status",
       action: new Status({ container }),
     },
-    //TODO: DataByEdge?
   ];
   routes.forEach((route: IRoute) => {
     switch (route.method) {

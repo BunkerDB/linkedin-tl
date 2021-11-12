@@ -10,7 +10,6 @@ export interface IDataGraphsDemographicDAO {
   read(args: {
     instance: string;
     externalAccountId: number;
-    //TODO: query: QueryableDTO;
   }): PromiseB<DataGraphsDemographicDTO[]>;
 
   find(args: {

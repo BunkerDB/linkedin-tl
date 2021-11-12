@@ -59,7 +59,6 @@ export class DataOrganizationDataMongoAdapter
       });
     }).then((document: Document | undefined | null) => {
       if (document === undefined || document === null) {
-        //TODO: throw Domain Error
         throw new Error("<model> not found");
       }
       return document as unknown as DataOrganizationDataDTO;

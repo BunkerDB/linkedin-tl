@@ -92,7 +92,7 @@ const signalTraps: NodeJS.Signals[] = ["SIGTERM", "SIGINT", "SIGUSR2"];
 errorTypes.map((type: any) => {
   process.on(type, async (error: number) => {
     try {
-      //TODO: Handle Domain Error to MongoDB authenticate failure?
+      //TODO: Handle Domain Error to MongoDB authenticate failure
       logger.info({ message: `process.on ${type}` });
       logger.error({ error: error ?? false });
       await server.close((err: Error | undefined) => {

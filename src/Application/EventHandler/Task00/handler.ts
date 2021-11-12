@@ -64,7 +64,6 @@ const consumer = kafka.consumer({
   sessionTimeout: container.get(IoC.Settings).KAFKA_CONSUMER_SESSION_TIMEOUT,
   heartbeatInterval:
     container.get(IoC.Settings).KAFKA_CONSUMER_SESSION_TIMEOUT / 3,
-  maxBytes: 30485760, //TODO: Check this
 });
 
 const run = async () => {

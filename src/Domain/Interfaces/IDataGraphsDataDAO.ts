@@ -8,7 +8,6 @@ export interface IDataGraphsDataDAO {
   read(args: {
     instance: string;
     externalAccountId: number;
-    //TODO: query: QueryableDTO;
   }): PromiseB<DataGraphsDataDTO[]>;
 
   find(args: {

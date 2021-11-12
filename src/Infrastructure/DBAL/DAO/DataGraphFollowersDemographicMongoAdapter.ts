@@ -63,7 +63,6 @@ export class DataGraphFollowersDemographicMongoAdapter
         })
         .toArray();
     }).then((model: Document[]) => {
-      //TODO: Remove this validation if returns empty on not found
       if (model === null) {
         throw new Error("<model> not found");
       }
@@ -87,7 +86,6 @@ export class DataGraphFollowersDemographicMongoAdapter
       });
     }).then((document: Document | undefined | null) => {
       if (document === undefined || document === null) {
-        //TODO: throw Domain Error
         throw new Error("<model> not found");
       }
       return document as unknown as DataGraphsDemographicDTO;
