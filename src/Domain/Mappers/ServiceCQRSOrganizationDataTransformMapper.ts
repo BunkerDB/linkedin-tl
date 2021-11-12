@@ -53,7 +53,7 @@ export class ServiceCQRSOrganizationDataTransformMapper {
     rawRow: LinkedInOrganizationsDTO;
   }): PromiseB<DataOrganizationDataDimensionBaseDTO> {
     return PromiseB.try(() => {
-      const linkedInPermalinkEdge: string = "https://www.linkedin.com/company/";
+      const linkedInPermalinkEdge = "https://www.linkedin.com/company/";
       const preferredLocale: string =
         args.rawRow.name.preferredLocale.language +
         "_" +

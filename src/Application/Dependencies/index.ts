@@ -56,7 +56,7 @@ const DependenciesManager = (containerBuilder: ContainerBuilder) => {
       key: IoC.Kafka,
       value: (container: ContainerInterface) => {
         const settings: SettingsInterface = container.get(IoC.Settings);
-        const broker: string = `${settings.KAFKA_ADVERTISED_HOST_NAME}:${settings.KAFKA_PORT}`;
+        const broker = `${settings.KAFKA_ADVERTISED_HOST_NAME}:${settings.KAFKA_PORT}`;
         return new Kafka({
           logLevel: settings.KAFKA_LOGLEVEL as unknown as logLevel,
           brokers: [broker],

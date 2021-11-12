@@ -139,8 +139,7 @@ export class ServiceCQRSTablePostsTransformMapper {
     assets: ReportRawDataAllInAssetsDTO;
   }): PromiseB<DataPostsDimensionBaseDTO> {
     return PromiseB.try(() => {
-      const linkedInPermalinkEdge: string =
-        "https://www.linkedin.com/feed/update/";
+      const linkedInPermalinkEdge = "https://www.linkedin.com/feed/update/";
       return {
         instance: args.instance,
         externalAccountId: args.externalAccountId,

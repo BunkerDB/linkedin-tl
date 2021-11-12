@@ -15,7 +15,7 @@ export class ContainerBuilder implements ContainerBuilderInterface {
 
   addDefinitions(
     args: {
-      key: Symbol;
+      key: symbol;
       value: (container: ContainerInterface) => any;
     }[]
   ): ContainerBuilder {
