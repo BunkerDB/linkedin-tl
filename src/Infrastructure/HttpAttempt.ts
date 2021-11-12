@@ -5,6 +5,7 @@ import {
   HttpRequest,
   HttpResponse,
 } from "./Interface/HttpInterface";
+import { ErrorDomainBase } from "../Domain/Error/ErrorDomainBase";
 
 export class HttpAttempt implements HttpInterface {
   private readonly _logger: LoggerInterface;
@@ -34,7 +35,8 @@ export class HttpAttempt implements HttpInterface {
   }
 
   async get(options: HttpRequest): Promise<HttpResponse> {
-    let attempt: number = 1;
+    const doRequest = true;
+    let attempt = 1;
     do {
       this.logger.info({
         attempt: attempt,
@@ -61,11 +63,16 @@ export class HttpAttempt implements HttpInterface {
         return;
       }).delay(delay * 1000);
       attempt++;
-    } while (true);
+    } while (doRequest);
+
+    throw new ErrorDomainBase({
+      message: `Error in the ${this.constructor.name}.get(args) -> Reached GET Request Max Attempts (options: ${options})`,
+    });
   }
 
   async post(options: HttpRequest): Promise<HttpResponse> {
-    let attempt: number = 1;
+    const doRequest = true;
+    let attempt = 1;
     do {
       this.logger.info({
         attempt: attempt,
@@ -92,6 +99,10 @@ export class HttpAttempt implements HttpInterface {
         return;
       }).delay(delay * 1000);
       attempt++;
-    } while (true);
+    } while (doRequest);
+
+    throw new ErrorDomainBase({
+      message: `Error in the ${this.constructor.name}.post(args) -> Reached POST Request Max Attempts (options: ${options})`,
+    });
   }
 }

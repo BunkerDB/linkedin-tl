@@ -3,7 +3,7 @@ import { ContainerInterface } from "./ContainerInterface";
 export interface ContainerBuilderInterface {
   addDefinitions(
     args: {
-      key: Symbol;
+      key: symbol;
       value: (container: ContainerInterface) => any;
     }[]
   ): ContainerBuilderInterface;

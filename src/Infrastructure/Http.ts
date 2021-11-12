@@ -27,7 +27,7 @@ export class Http implements HttpInterface {
   get(options: HttpRequest): Promise<HttpResponse> {
     this.logger.info({ ...options, service: this.constructor.name });
     return PromiseB.try(() => {
-      let config: AxiosRequestConfig = this.parseOptions({
+      const config: AxiosRequestConfig = this.parseOptions({
         options: options,
         method: "GET",
         responseType: "json",
