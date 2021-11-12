@@ -1,11 +1,7 @@
 import PromiseB from "bluebird";
 import { S3 } from "aws-sdk";
-import { FileDTO } from "../../Domain/DTO/FileDTO";
 import { IFileUploader } from "../Interface/IFileUploader";
-import moment from "moment";
-import _ = require("lodash");
 import { LoggerInterface } from "../Interface/LoggerInterface";
-import { PutObjectOutput, PutObjectRequest } from "aws-sdk/clients/s3";
 import { UploadedFileDTO } from "../../Domain/DTO/UploadedFileDTO";
 import { ManagedUpload } from "aws-sdk/lib/s3/managed_upload";
 import SendData = ManagedUpload.SendData;
