@@ -216,17 +216,23 @@ export class ServiceCQRSTablePostsTransformMapper {
     return PromiseB.try(() => {
       return {
         average_ctr:
-          (args.assets.metrics.totalShareStatistics?.clickCount /
-            args.assets.metrics.totalShareStatistics?.impressionCount) *
-            100 ?? 0,
+          args.assets.metrics.totalShareStatistics?.impressionCount > 0
+            ? (args.assets.metrics.totalShareStatistics?.clickCount /
+                args.assets.metrics.totalShareStatistics?.impressionCount) *
+                100 ?? 0
+            : 0,
         engagement_rate_impressions:
-          (args.assets.metrics.totalShareStatistics?.engagement /
-            args.assets.metrics.totalShareStatistics?.impressionCount) *
-            100 ?? 0,
+          args.assets.metrics.totalShareStatistics?.impressionCount > 0
+            ? (args.assets.metrics.totalShareStatistics?.engagement /
+                args.assets.metrics.totalShareStatistics?.impressionCount) *
+                100 ?? 0
+            : 0,
         video_view_rate:
-          ((args.assets.video_analytics?.value ?? 0) /
-            args.assets.metrics.totalShareStatistics?.impressionCount) *
-            100 ?? 0,
+          args.assets.metrics.totalShareStatistics?.impressionCount > 0
+            ? ((args.assets.video_analytics?.value ?? 0) /
+                args.assets.metrics.totalShareStatistics?.impressionCount) *
+                100 ?? 0
+            : 0,
         interactions:
           (args.assets.metrics.totalShareStatistics?.clickCount ?? 0) +
           (args.assets.metrics.totalShareStatistics?.shareCount ?? 0) +
