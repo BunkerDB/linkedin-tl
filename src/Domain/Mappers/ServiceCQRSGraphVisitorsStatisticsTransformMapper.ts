@@ -10,6 +10,7 @@ import {
   DataGraphsDataMetricsDTO,
   DataGraphsDataMetricsVisitorsDTO,
 } from "../DTO/DataGraphsDataDTO";
+import os from "os";
 
 export class ServiceCQRSGraphVisitorsStatisticsTransformMapper {
   execute(args: {
@@ -65,6 +66,9 @@ export class ServiceCQRSGraphVisitorsStatisticsTransformMapper {
         };
 
         return pageRow;
+      },
+      {
+        concurrency: (os.cpus().length ?? 1) * 2 + 1,
       }
     );
     return PromiseB.all(actionTransformVisitorsStatisticsMetrics).then(
