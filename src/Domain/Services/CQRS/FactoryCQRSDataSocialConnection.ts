@@ -22,6 +22,7 @@ import { DataGraphVisitorsDemographicDAO } from "../../Repository/DAO/DataGraphV
 import { ServiceCQRSOrganizationData } from "./ServiceCQRSOrganizationData";
 import { DataOrganizationDataDAO } from "../../Repository/DAO/DataOrganizationDataDAO";
 import { ElementEdge } from "../../Types/ElementEdge";
+import { DimensionsDAO } from "../../Repository/DAO/DimensionsDAO";
 
 export class FactoryCQRSDataSocialConnection {
   private readonly _container: ContainerInterface;
@@ -48,6 +49,9 @@ export class FactoryCQRSDataSocialConnection {
           return new ServiceCQRSGraphVisitorsDemographic({
             adapter: new DataGraphVisitorsDemographicDAO({
               adapter: this.container.get(IoC.IDataGraphVisitorsDemographicDAO),
+            }),
+            adapterDimensions: new DimensionsDAO({
+              adapter: this.container.get(IoC.IDimensionsDAO),
             }),
           }).execute({
             rawRow: args.rawData,

@@ -14,6 +14,7 @@ import { DataGraphFollowersDemographicMongoAdapter } from "../../Infrastructure/
 import { DataGraphVisitorsDemographicMongoAdapter } from "../../Infrastructure/DBAL/DAO/DataGraphVisitorsDemographicMongoAdapter";
 import { DataOrganizationDataMongoAdapter } from "../../Infrastructure/DBAL/DAO/DataOrganizationDataMongoAdapter";
 import { MongoClientOptions } from "mongodb";
+import { DimensionsMongoAdapter } from "../../Infrastructure/DBAL/DAO/DimensionsMongoAdapter";
 
 const IoC = {
   Settings: Symbol.for("Settings"),
@@ -37,6 +38,7 @@ const IoC = {
     "IDataGraphVisitorsDemographicDAO"
   ),
   IDataOrganizationDataDAO: Symbol.for("IDataOrganizationDataDAO"),
+  IDimensionsDAO: Symbol.for("IDimensionsDAO"),
 };
 
 const DependenciesManager = (containerBuilder: ContainerBuilder) => {
@@ -152,6 +154,15 @@ const DependenciesManager = (containerBuilder: ContainerBuilder) => {
       key: IoC.IDataOrganizationDataDAO,
       value: (container: ContainerInterface) => {
         return new DataOrganizationDataMongoAdapter({
+          adapter: container.get(IoC.MongoClient),
+          database: container.get(IoC.Settings).MONGODB_DATABASE,
+        });
+      },
+    },
+    {
+      key: IoC.IDimensionsDAO,
+      value: (container: ContainerInterface) => {
+        return new DimensionsMongoAdapter({
           adapter: container.get(IoC.MongoClient),
           database: container.get(IoC.Settings).MONGODB_DATABASE,
         });
