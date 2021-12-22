@@ -18,6 +18,8 @@ export interface SettingsInterface {
   TRACING_CONFIG_REPORTER_COLLECTOR_ENDPOINT: string;
   CONSUMER_SUBSCRIBE_TOPIC_00: string;
   CONSUMER_GROUP_ID_TOPIC_00: string;
+  CONSUMER_SUBSCRIBE_TOPIC_DIMENSIONS: string;
+  CONSUMER_GROUP_ID_TOPIC_DIMENSIONS: string;
 }
 
 const SettingsManager = (containerBuilder: ContainerBuilderInterface) => {
@@ -49,6 +51,10 @@ const SettingsManager = (containerBuilder: ContainerBuilderInterface) => {
     CONSUMER_GROUP_ID_TOPIC_00: Joi.string()
       .optional()
       .default("linkedin-tl-cqrs"),
+    CONSUMER_SUBSCRIBE_TOPIC_DIMENSIONS: Joi.string().required(),
+    CONSUMER_GROUP_ID_TOPIC_DIMENSIONS: Joi.string()
+      .optional()
+      .default("linkedin-tl-dimensions"),
   });
 
   const validationResult: ValidationResult = schemaSettings.validate({
@@ -66,6 +72,10 @@ const SettingsManager = (containerBuilder: ContainerBuilderInterface) => {
       process.env.TRACING_CONFIG_REPORTER_COLLECTOR_ENDPOINT,
     CONSUMER_SUBSCRIBE_TOPIC_00: process.env.CONSUMER_SUBSCRIBE_TOPIC_00,
     CONSUMER_GROUP_ID_TOPIC_00: process.env.CONSUMER_GROUP_ID_TOPIC_00,
+    CONSUMER_SUBSCRIBE_TOPIC_DIMENSIONS:
+      process.env.CONSUMER_SUBSCRIBE_TOPIC_DIMENSIONS,
+    CONSUMER_GROUP_ID_TOPIC_DIMENSIONS:
+      process.env.CONSUMER_GROUP_ID_TOPIC_DIMENSIONS,
   });
 
   if (validationResult.error !== undefined) {

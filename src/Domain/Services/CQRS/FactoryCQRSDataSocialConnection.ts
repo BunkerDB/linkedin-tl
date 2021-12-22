@@ -81,6 +81,9 @@ export class FactoryCQRSDataSocialConnection {
                 IoC.IDataGraphFollowersDemographicDAO
               ),
             }),
+            adapterDimensions: new DimensionsDAO({
+              adapter: this.container.get(IoC.IDimensionsDAO),
+            }),
           }).execute({
             rawRow: args.rawData,
           });

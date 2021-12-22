@@ -9,5 +9,5 @@ export interface IDimensionsDAO {
     id: string;
     type: Dimension;
   }): PromiseB<DimensionsDTO>;
-  upsert(input: { input: DimensionsCreateInputDTO }): PromiseB<boolean>;
+  upsert(args: { input: DimensionsCreateInputDTO }): PromiseB<boolean>;
 }

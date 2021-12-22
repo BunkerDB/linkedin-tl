@@ -7,16 +7,26 @@ import { DimensionsDTO } from "../../DTO/DimensionsDTO";
 import _ from "lodash";
 import { ErrorEmptyDimensionsInPeriod } from "../../Error/ErrorEmptyDimensionsInPeriod";
 import { FollowersDemographicRawDataAllInRowDTO } from "../../DTO/FollowersDemographicRawDataAllInRowDTO";
+import { IDimensionsDAO } from "../../Interfaces/IDimensionsDAO";
 
 export class ServiceCQRSGraphFollowersDemographic {
   private readonly _adapter: IDataGraphsDemographicDAO;
+  private readonly _adapterDimensions: IDimensionsDAO;
 
-  constructor(args: { adapter: IDataGraphsDemographicDAO }) {
+  constructor(args: {
+    adapter: IDataGraphsDemographicDAO;
+    adapterDimensions: IDimensionsDAO;
+  }) {
     this._adapter = args.adapter;
+    this._adapterDimensions = args.adapterDimensions;
   }
 
   get adapter(): IDataGraphsDemographicDAO {
     return this._adapter;
+  }
+
+  get adapterDimensions(): IDimensionsDAO {
+    return this._adapterDimensions;
   }
 
   execute(args: { rawRow: ReportRawDataAllInDTO }): PromiseB<boolean> {
@@ -32,28 +42,30 @@ export class ServiceCQRSGraphFollowersDemographic {
   private transform(args: {
     rawRow: ReportRawDataAllInDTO;
   }): PromiseB<DataGraphsDemographicCreateInputDTO> {
-    const rawRow: FollowersDemographicRawDataAllInRowDTO = args.rawRow
-      .data as unknown as FollowersDemographicRawDataAllInRowDTO;
-
     return PromiseB.try(() => {
-      const dimensions: DimensionsDTO[] = JSON.parse(
-        args.rawRow.dimensions as unknown as string
-      );
+      return this.adapterDimensions.find();
+    })
+      .then((dimensions: DimensionsDTO[]) => {
+        return this.validateDimensions({
+          report: args.rawRow,
+          dimensions: dimensions,
+        });
+      })
+      .then((dimensions: DimensionsDTO[]) => {
+        const rawRow: FollowersDemographicRawDataAllInRowDTO = args.rawRow
+          .data as unknown as FollowersDemographicRawDataAllInRowDTO;
 
-      return this.validateDimensions({
-        report: args.rawRow,
-        dimensions: dimensions,
+        return new ServiceCQRSGraphFollowersDemographicTransformMapper().execute(
+          {
+            instance: args.rawRow.instance,
+            externalAccountId: args.rawRow.organization,
+            totalFollowers: rawRow.total ?? 0,
+            dimensions: dimensions,
+            rawRow: args.rawRow.data,
+            edge: args.rawRow.edge,
+          }
+        );
       });
-    }).then((dimensions: DimensionsDTO[]) => {
-      return new ServiceCQRSGraphFollowersDemographicTransformMapper().execute({
-        instance: args.rawRow.instance,
-        externalAccountId: args.rawRow.organization,
-        totalFollowers: rawRow.total ?? 0,
-        dimensions: dimensions,
-        rawRow: args.rawRow.data,
-        edge: args.rawRow.edge,
-      });
-    });
   }
 
   private load(args: {

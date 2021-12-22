@@ -1,10 +1,17 @@
 import { DataMongoAdapterBase } from "./DataMongoAdapterBase";
-import { Document, MongoClient } from "mongodb";
+import {
+  Document,
+  Filter,
+  MongoClient,
+  UpdateFilter,
+  UpdateOptions,
+} from "mongodb";
 import PromiseB from "bluebird";
 import { DimensionsDTO } from "../../../Domain/DTO/DimensionsDTO";
 import { DimensionsCreateInputDTO } from "../../../Domain/DTO/DimensionsCreateInputDTO";
 import { IDimensionsDAO } from "../../../Domain/Interfaces/IDimensionsDAO";
 import { Dimension } from "../../../Domain/Types/Dimension";
+import moment from "moment";
 
 export class DimensionsMongoAdapter
   extends DataMongoAdapterBase
@@ -18,10 +25,27 @@ export class DimensionsMongoAdapter
     });
   }
 
-  upsert(_: { input: DimensionsCreateInputDTO }): PromiseB<boolean> {
+  upsert(args: { input: DimensionsCreateInputDTO }): PromiseB<boolean> {
     return PromiseB.try(() => {
-      //TODO:
-      return true;
+      const query: Filter<Document> = {
+        id: args.input.id,
+        type: args.input.type,
+        externalId: args.input.externalId,
+      };
+      const update: UpdateFilter<Document> | Partial<Document> = {
+        $set: {
+          valueES: args.input.valueES,
+          valueEN: args.input.valueEN,
+          valuePT: args.input.valuePT,
+          updatedAt: new Date(moment().utc(false).format()),
+        },
+        $setOnInsert: {
+          createdAt: new Date(moment().utc(false).format()),
+        },
+      };
+      const options: UpdateOptions = { upsert: true };
+
+      return this.collection.updateOne(query, update, options);
     }).then((_) => {
       return true;
     });
