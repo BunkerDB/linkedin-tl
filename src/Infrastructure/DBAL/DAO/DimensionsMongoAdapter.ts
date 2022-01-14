@@ -10,8 +10,8 @@ import PromiseB from "bluebird";
 import { DimensionsDTO } from "../../../Domain/DTO/DimensionsDTO";
 import { DimensionsCreateInputDTO } from "../../../Domain/DTO/DimensionsCreateInputDTO";
 import { IDimensionsDAO } from "../../../Domain/Interfaces/IDimensionsDAO";
-import { Dimension } from "../../../Domain/Types/Dimension";
 import moment from "moment";
+import { ErrorDomainBase } from "../../../Domain/Error/ErrorDomainBase";
 
 export class DimensionsMongoAdapter
   extends DataMongoAdapterBase
@@ -56,16 +56,12 @@ export class DimensionsMongoAdapter
       return this.collection.find().toArray();
     }).then((documents: Document[] | undefined | null) => {
       if (documents === undefined || documents === null) {
-        throw new Error("<Dimensions> not found");
+        throw new ErrorDomainBase({
+          message: `Error in the ${this.constructor.name}.find() -> Dimensions Not Found`,
+          code: 500,
+        });
       }
       return documents as unknown as DimensionsDTO[];
-    });
-  }
-
-  findByIdAndType(_: { id: string; type: Dimension }): PromiseB<DimensionsDTO> {
-    return PromiseB.try(() => {
-      //TODO:
-      return [] as unknown as DimensionsDTO;
     });
   }
 }
