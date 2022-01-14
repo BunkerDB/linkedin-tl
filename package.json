@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "build": "npm run build:ts",
+    "build": "npm run ts:lint && rm -rf dist && npm run build:ts",
     "build:ts": "tsc",
     "ts:lint": "tsc --noEmit && eslint \"**/*.{js,ts}\" --quiet --fix",
     "start": "concurrently -k -p \"[{name}]\" -n \"Ms:Task:WebServer,Ms:Task:00,Ms:Task:Dimensions\" -c \"red.bold,green.bold,blue.bold,magenta.bold,cyan.bold,gray.bold\" \"npm run start:task:web\" \"npm run start:task:00\" \"npm run start:task:dimensions\"",
