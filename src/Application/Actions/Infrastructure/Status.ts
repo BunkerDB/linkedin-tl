@@ -6,6 +6,7 @@ import { Span } from "opentracing";
 import { GroupOverview, ITopicMetadata, Kafka, SeekEntry } from "kafkajs";
 import { IoC } from "../../Dependencies";
 import { ListDatabasesResult, MongoClient } from "mongodb";
+import os from "os";
 
 export class Status extends ActionBase {
   constructor(args: { container: ContainerInterface }) {
@@ -157,19 +158,25 @@ export class Status extends ActionBase {
       },
     ];
 
-    return PromiseB.map(topics, (relationTopic) => {
-      return PromiseB.try(() => {
-        return kafka.admin().fetchOffsets({
-          groupId: relationTopic.groupId,
-          topic: relationTopic.topic,
+    return PromiseB.map(
+      topics,
+      (relationTopic) => {
+        return PromiseB.try(() => {
+          return kafka.admin().fetchOffsets({
+            groupId: relationTopic.groupId,
+            topic: relationTopic.topic,
+          });
+        }).then((result) => {
+          return {
+            groupId: relationTopic.groupId,
+            topic: relationTopic.topic,
+            offsets: result,
+          };
         });
-      }).then((result) => {
-        return {
-          groupId: relationTopic.groupId,
-          topic: relationTopic.topic,
-          offsets: result,
-        };
-      });
-    });
+      },
+      {
+        concurrency: (os.cpus().length ?? 1) * 2 + 1,
+      }
+    );
   }
 }

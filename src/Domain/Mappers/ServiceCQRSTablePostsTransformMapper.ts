@@ -14,6 +14,7 @@ import {
 import { LinkedInMediaDataContentEntitiesDTO } from "../../Infrastructure/DTO/LinkedInMediaDataDTO";
 import { LinkedInUgcPostsElementsDTO } from "../../Infrastructure/DTO/LinkedInUgcPostsElementsDTO";
 import moment from "moment";
+import os from "os";
 
 declare type TablePostsTransformReactionsDTO = {
   reaction_appreciation: number;
@@ -170,6 +171,9 @@ export class ServiceCQRSTablePostsTransformMapper {
             link: null,
             title: args.postAssets.media?.title,
           } as DataPostsDimensionAssetsDTO;
+        },
+        {
+          concurrency: (os.cpus().length ?? 1) * 2 + 1,
         }
       );
 

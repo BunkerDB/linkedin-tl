@@ -5,6 +5,7 @@ import {
   DataOrganizationDataDimensionDTO,
 } from "../DTO/DataOrganizationDataDTO";
 import { DataOrganizationDataCreateInputDTO } from "../DTO/DataOrganizationDataCreateInputDTO";
+import os from "os";
 
 export class ServiceCQRSOrganizationDataTransformMapper {
   execute(args: {
@@ -79,6 +80,9 @@ export class ServiceCQRSOrganizationDataTransformMapper {
       (asset: any) => {
         //If they wanted to store all pictures resolutions in the future, here is the place to put the logic
         return asset.identifiers[0].identifier;
+      },
+      {
+        concurrency: (os.cpus().length ?? 1) * 2 + 1,
       }
     );
 
@@ -99,6 +103,9 @@ export class ServiceCQRSOrganizationDataTransformMapper {
       (asset: any) => {
         //If they wanted to store all pictures resolutions in the future, here is the place to put the logic
         return asset.identifiers[0].identifier;
+      },
+      {
+        concurrency: (os.cpus().length ?? 1) * 2 + 1,
       }
     );
 
