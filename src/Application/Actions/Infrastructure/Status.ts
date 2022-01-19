@@ -136,7 +136,10 @@ export class Status extends ActionBase {
     const kafka: Kafka = this.container.get(IoC.Kafka);
     return PromiseB.try(() => {
       return kafka.admin().fetchTopicMetadata({
-        topics: [this.container.get(IoC.Settings).CONSUMER_SUBSCRIBE_TOPIC_00],
+        topics: [
+          this.container.get(IoC.Settings).CONSUMER_SUBSCRIBE_TOPIC_00,
+          this.container.get(IoC.Settings).CONSUMER_SUBSCRIBE_TOPIC_DIMENSIONS,
+        ],
       });
     }).then((result) => {
       return result.topics;
@@ -155,6 +158,12 @@ export class Status extends ActionBase {
       {
         topic: this.container.get(IoC.Settings).CONSUMER_SUBSCRIBE_TOPIC_00,
         groupId: this.container.get(IoC.Settings).CONSUMER_GROUP_ID_TOPIC_00,
+      },
+      {
+        topic: this.container.get(IoC.Settings)
+          .CONSUMER_SUBSCRIBE_TOPIC_DIMENSIONS,
+        groupId: this.container.get(IoC.Settings)
+          .CONSUMER_GROUP_ID_TOPIC_DIMENSIONS,
       },
     ];
 
