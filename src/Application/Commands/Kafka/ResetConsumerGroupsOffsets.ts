@@ -26,6 +26,10 @@ const instances: { groupId: string; topic: string }[] = [
     groupId: settings.CONSUMER_GROUP_ID_TOPIC_00,
     topic: settings.CONSUMER_SUBSCRIBE_TOPIC_00,
   },
+  {
+    groupId: settings.CONSUMER_GROUP_ID_TOPIC_DIMENSIONS,
+    topic: settings.CONSUMER_SUBSCRIBE_TOPIC_DIMENSIONS,
+  },
 ];
 
 const run = async () => {
