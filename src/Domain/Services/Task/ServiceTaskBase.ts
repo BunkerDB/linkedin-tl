@@ -64,19 +64,7 @@ export abstract class ServiceTaskBase<T, Q> {
         this.span = span;
       })
       .then(() => {
-        this.span.log({
-          event: `start-${this.getCurrentTaskName()}`,
-          value: { result: this.message },
-        });
-      })
-      .then(() => {
         return this.task();
-      })
-      .then(() => {
-        this.span.log({
-          event: `finish-${this.getCurrentTaskName()}`,
-          value: { result: {} },
-        });
       })
       .then(() => {
         this.span.setTag(Tags.HTTP_STATUS_CODE, 200);
@@ -112,21 +100,10 @@ export abstract class ServiceTaskBase<T, Q> {
 
   protected task(): PromiseB<Q> {
     return PromiseB.try(() => {
-      this.span.log({
-        event: `start-${this.getCurrentTaskName()}-task`,
-        value: { result: {} },
-      });
-    })
-      .then(() => {
-        return this.doTask();
-      })
-      .then((result: Q) => {
-        this.span.log({
-          event: `finish-${this.getCurrentTaskName()}-task`,
-          value: { result: { result } },
-        });
-        return result;
-      });
+      return this.doTask();
+    }).then((result: Q) => {
+      return result;
+    });
   }
 
   protected abstract doTask(): PromiseB<Q>;

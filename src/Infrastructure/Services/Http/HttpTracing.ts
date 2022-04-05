@@ -48,17 +48,9 @@ export class HttpTracing implements HttpInterface {
       ...options.headers,
     };
     return PromiseB.try(() => {
-      span.log({
-        value: { options: options },
-      });
+      return this.adapter.get(options);
     })
-      .then(() => {
-        return this.adapter.get(options);
-      })
       .then((response: HttpResponse) => {
-        span.log({
-          value: { response: response.data },
-        });
         span.setTag(Tags.HTTP_STATUS_CODE, 200);
         span.finish();
         return response;
@@ -88,17 +80,9 @@ export class HttpTracing implements HttpInterface {
       ...options.headers,
     };
     return PromiseB.try(() => {
-      span.log({
-        value: { options: options },
-      });
+      return this.adapter.post(options);
     })
-      .then(() => {
-        return this.adapter.post(options);
-      })
       .then((response: HttpResponse) => {
-        span.log({
-          value: { response: response.data },
-        });
         span.setTag(Tags.HTTP_STATUS_CODE, response.status);
         span.finish();
         return response;

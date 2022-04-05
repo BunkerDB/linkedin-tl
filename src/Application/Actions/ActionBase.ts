@@ -31,26 +31,8 @@ export abstract class ActionBase implements IAction {
     span.setTag(Tags.SPAN_KIND_MESSAGING_PRODUCER, true);
 
     return PromiseB.try(() => {
-      span.log({
-        event: "start",
-        value: {
-          action: this.getActionName(),
-        },
-      });
+      return this.doCall({ req, res, span });
     })
-      .then(() => {
-        return this.doCall({ req, res, span });
-      })
-      .then((result: any) => {
-        span.log({
-          event: "finish",
-          value: {
-            action: this.getActionName(),
-            result: result,
-          },
-        });
-        return result;
-      })
       .then((result: any) => {
         this.postDoCall({ res, result });
       })
