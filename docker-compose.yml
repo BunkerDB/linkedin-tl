@@ -1,7 +1,7 @@
 version: "3.8"
 
 services:
-  mongo:
+  mongo-linkedin:
     image: mongo
     restart: unless-stopped
     ports:
@@ -11,7 +11,7 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
-    container_name: mongo
+    container_name: mongo-linkedin
 
 #  server:
 #    build:
