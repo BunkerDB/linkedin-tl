@@ -5,16 +5,23 @@ import { IDataPostsDAO } from "../../Interfaces/IDataPostsDAO";
 import { LinkedInUgcPostsElementsDTO } from "../../../Infrastructure/DTO/LinkedInUgcPostsElementsDTO";
 import { ReportRawDataAllInAssetsDTO } from "../../DTO/ReportRawDataAllInAssetsDTO";
 import { ServiceCQRSTablePostsTransformMapper } from "../../Mappers/ServiceCQRSTablePostsTransformMapper";
+import { SettingsInterface } from "../../../Application/Setting";
 
 export class ServiceCQRSTablePosts {
   private readonly _adapter: IDataPostsDAO;
+  private readonly _settings: SettingsInterface;
 
-  constructor(args: { adapter: IDataPostsDAO }) {
+  constructor(args: { adapter: IDataPostsDAO; settings: SettingsInterface }) {
     this._adapter = args.adapter;
+    this._settings = args.settings;
   }
 
   get adapter(): IDataPostsDAO {
     return this._adapter;
+  }
+
+  get settings(): SettingsInterface {
+    return this._settings;
   }
 
   execute(args: { rawRow: ReportRawDataAllInDTO }): PromiseB<boolean> {
@@ -36,7 +43,9 @@ export class ServiceCQRSTablePosts {
         args.rawRow.assets as unknown as string
       );
 
-      return new ServiceCQRSTablePostsTransformMapper().execute({
+      return new ServiceCQRSTablePostsTransformMapper({
+        settings: this.settings,
+      }).execute({
         instance: args.rawRow.instance,
         externalAccountId: args.rawRow.organization,
         post: rawRow,

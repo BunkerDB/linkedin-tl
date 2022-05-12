@@ -100,6 +100,7 @@ export class FactoryCQRSDataSocialConnection {
             adapter: new DataTablePostsDAO({
               adapter: this.container.get(IoC.IDataTablePostsDAO),
             }),
+            settings: this.container.get(IoC.Settings),
           }).execute({
             rawRow: args.rawData,
           });

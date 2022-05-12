@@ -20,6 +20,10 @@ export interface SettingsInterface {
   CONSUMER_GROUP_ID_TOPIC_00: string;
   CONSUMER_SUBSCRIBE_TOPIC_DIMENSIONS: string;
   CONSUMER_GROUP_ID_TOPIC_DIMENSIONS: string;
+  CDN_HASH_CIPHER: string;
+  CDN_HASH_KEY: string;
+  CDN_HASH_IV: string;
+  CDN_PATH: string;
 }
 
 const SettingsManager = (containerBuilder: ContainerBuilderInterface) => {
@@ -55,6 +59,10 @@ const SettingsManager = (containerBuilder: ContainerBuilderInterface) => {
     CONSUMER_GROUP_ID_TOPIC_DIMENSIONS: Joi.string()
       .optional()
       .default("linkedin-tl-dimensions"),
+    CDN_HASH_CIPHER: Joi.string().required(),
+    CDN_HASH_KEY: Joi.string().required().length(16),
+    CDN_HASH_IV: Joi.string().required().length(16),
+    CDN_PATH: Joi.string().required(),
   });
 
   const validationResult: ValidationResult = schemaSettings.validate({
@@ -76,6 +84,10 @@ const SettingsManager = (containerBuilder: ContainerBuilderInterface) => {
       process.env.CONSUMER_SUBSCRIBE_TOPIC_DIMENSIONS,
     CONSUMER_GROUP_ID_TOPIC_DIMENSIONS:
       process.env.CONSUMER_GROUP_ID_TOPIC_DIMENSIONS,
+    CDN_HASH_CIPHER: process.env.CDN_HASH_CIPHER,
+    CDN_HASH_KEY: process.env.CDN_HASH_KEY,
+    CDN_HASH_IV: process.env.CDN_HASH_IV,
+    CDN_PATH: process.env.CDN_PATH,
   });
 
   if (validationResult.error !== undefined) {

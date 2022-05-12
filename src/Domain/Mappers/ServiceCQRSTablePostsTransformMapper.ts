@@ -15,6 +15,8 @@ import { LinkedInMediaDataContentEntitiesDTO } from "../../Infrastructure/DTO/Li
 import { LinkedInUgcPostsElementsDTO } from "../../Infrastructure/DTO/LinkedInUgcPostsElementsDTO";
 import moment from "moment";
 import os from "os";
+import { SettingsInterface } from "../../Application/Setting";
+import { ServiceCryptoHelper } from "../Services/ServiceCryptoHelper";
 
 declare type TablePostsTransformReactionsDTO = {
   reaction_appreciation: number;
@@ -33,6 +35,16 @@ declare type TablePostsTransformCustomMetricsDTO = {
 };
 
 export class ServiceCQRSTablePostsTransformMapper {
+  private readonly _settings: SettingsInterface;
+
+  constructor(args: { settings: SettingsInterface }) {
+    this._settings = args.settings;
+  }
+
+  get settings(): SettingsInterface {
+    return this._settings;
+  }
+
   execute(args: {
     instance: string;
     externalAccountId: number;
@@ -72,18 +84,82 @@ export class ServiceCQRSTablePostsTransformMapper {
       actionTransformDimensionBase,
       actionTransformDimensionAssets,
     ]).then(
-      (result: [DataPostsDimensionBaseDTO, DataPostsDimensionAssetsDTO[]]) => {
+      async (
+        result: [DataPostsDimensionBaseDTO, DataPostsDimensionAssetsDTO[]]
+      ) => {
+        const helper = new ServiceCryptoHelper({ settings: this.settings });
+        /* [ type, postId, entityId, network, INST_NAME ] */
+        const hash: string = helper.encryptImageData([
+          result[0].type,
+          result[0].externalAccountId.toString() + result[0].externalMediaId,
+          0,
+          "linkedin",
+          result[0].instance,
+        ]);
+        let metadata: Array<{ hash: string; field: string; asset: string }> =
+          [];
+        let pictureImage: string = result[0].picture;
+        let pictureImageLarge: string = "";
+
+        if (result[0].picture !== "") {
+          metadata.push({
+            hash: hash,
+            field: "picture",
+            asset: result[0].picture,
+          });
+          pictureImage =
+            this.settings.CDN_PATH +
+            result[0].instance +
+            "/" +
+            encodeURIComponent(hash) +
+            "/";
+          pictureImageLarge = pictureImage + "big/";
+        }
+        if (result[1].length > 0) {
+          const actions = PromiseB.map(
+            result[1],
+            async (item, index) => {
+              const itemHash: string = helper.encryptImageData([
+                result[0].type + "_ASSETS_" + index,
+                result[0].externalAccountId.toString() +
+                  result[0].externalMediaId,
+                0,
+                "linkedin",
+                result[0].instance,
+              ]);
+              metadata.push({
+                hash: itemHash,
+                field: result[0].type + "_item_" + index,
+                asset: item.src,
+              });
+              item.src =
+                this.settings.CDN_PATH +
+                result[0].instance +
+                "/" +
+                encodeURIComponent(itemHash) +
+                "/";
+            },
+            {
+              concurrency: os.cpus().length + 1,
+            }
+          );
+          await PromiseB.all(actions).then(() => {
+            return;
+          });
+        }
+
         return {
           instance: result[0].instance,
           externalAccountId: result[0].externalAccountId,
           externalMediaId: result[0].externalMediaId,
           text: result[0].text,
-          picture: result[0].picture,
-          pictureLarge: result[0].pictureLarge,
+          picture: pictureImage,
+          pictureLarge: pictureImageLarge,
           createdTime: result[0].createdTime,
           type: result[0].type,
           permalink: result[0].permalink,
           assets: result[1],
+          cdn_metadata: JSON.stringify(metadata),
         };
       }
     );
@@ -154,6 +230,7 @@ export class ServiceCQRSTablePostsTransformMapper {
         permalink: args.post["id~"]
           ? linkedInPermalinkEdge + args.post["id~"]?.activity
           : null ?? null,
+        cdn_metadata: "[]",
       };
     });
   }

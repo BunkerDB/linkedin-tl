@@ -19,6 +19,7 @@ export declare type DataPostsDimensionBaseDTO = {
   createdTime: Date;
   type: string;
   permalink?: string | null;
+  cdn_metadata: string | null;
 };
 
 export declare type DataPostsMetricsDTO = {
