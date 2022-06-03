@@ -8,7 +8,10 @@ import {
 } from "mongodb";
 import { IDataGraphsDataDAO } from "../../../Domain/Interfaces/IDataGraphsDataDAO";
 import { DataGraphsDataCreateInputDTO } from "../../../Domain/DTO/DataGraphsDataCreateInputDTO";
-import { DataGraphsDataDTO } from "../../../Domain/DTO/DataGraphsDataDTO";
+import {
+  DataGraphsDataDTO,
+  DataGraphsDataMetricsFollowersDTO,
+} from "../../../Domain/DTO/DataGraphsDataDTO";
 import { DataMongoAdapterBase } from "./DataMongoAdapterBase";
 import moment from "moment";
 
@@ -23,27 +26,71 @@ export class DataGraphFollowersStatisticsMongoAdapter
 
   upsert(args: { input: DataGraphsDataCreateInputDTO }): PromiseB<boolean> {
     return PromiseB.try(() => {
-      const query: Filter<Document> = {
-        "dimension.instance": args.input.dimension.instance,
-        "dimension.date": args.input.dimension.date,
-        "dimension.externalAccountId": args.input.dimension.externalAccountId,
-      };
-      const update: UpdateFilter<Document> | Partial<Document> = {
-        $set: {
-          dimension: args.input.dimension,
-          "metrics.followers": args.input.metrics.followers,
-          updatedAt: new Date(moment().utc(false).format()),
-        },
-        $setOnInsert: {
-          createdAt: new Date(moment().utc(false).format()),
-        },
-      };
-      const options: UpdateOptions = { upsert: true };
+      const yesterdayDate: Date = new Date(
+        moment().utc(false).subtract(1, "day").format()
+      );
+      const dimensionDate: string =
+        args.input.dimension.date.getUTCFullYear().toString() +
+        "-" +
+        (args.input.dimension.date.getUTCMonth() + 1).toString() +
+        "-" +
+        args.input.dimension.date.getUTCDate().toString();
+      const yesterday: string =
+        yesterdayDate.getUTCFullYear().toString() +
+        "-" +
+        (yesterdayDate.getUTCMonth() + 1).toString() +
+        "-" +
+        yesterdayDate.getUTCDate().toString();
+      const followersData:
+        | Partial<DataGraphsDataMetricsFollowersDTO>
+        | undefined = args.input.metrics.followers;
+      if (followersData !== undefined && dimensionDate !== yesterday) {
+        let lifeTimeFollowers = 0;
+        return this.find({
+          date: args.input.dimension.date,
+          instance: args.input.dimension.instance,
+          externalAccountId: args.input.dimension.externalAccountId,
+        }).then((itemData: DataGraphsDataDTO) => {
+          if (itemData.metrics.followers) {
+            lifeTimeFollowers = itemData.metrics.followers.lifetime_followers;
+            if (followersData) {
+              followersData.lifetime_followers = lifeTimeFollowers;
+            }
+          }
+          return followersData;
+        });
+      }
+      return followersData;
+    })
+      .then(
+        (
+          followersData: Partial<DataGraphsDataMetricsFollowersDTO> | undefined
+        ) => {
+          const query: Filter<Document> = {
+            "dimension.instance": args.input.dimension.instance,
+            "dimension.date": args.input.dimension.date,
+            "dimension.externalAccountId":
+              args.input.dimension.externalAccountId,
+          };
+          const currentDate: Date = new Date(moment().utc(false).format());
+          const update: UpdateFilter<Document> | Partial<Document> = {
+            $set: {
+              dimension: args.input.dimension,
+              "metrics.followers": followersData,
+              updatedAt: currentDate,
+            },
+            $setOnInsert: {
+              createdAt: currentDate,
+            },
+          };
+          const options: UpdateOptions = { upsert: true };
 
-      return this.collection.updateOne(query, update, options);
-    }).then((_) => {
-      return true;
-    });
+          return this.collection.updateOne(query, update, options);
+        }
+      )
+      .then((_) => {
+        return true;
+      });
   }
 
   read(args: {
