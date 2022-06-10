@@ -45,17 +45,13 @@ export class DataGraphFollowersStatisticsMongoAdapter
         | Partial<DataGraphsDataMetricsFollowersDTO>
         | undefined = args.input.metrics.followers;
       if (followersData !== undefined && dimensionDate !== yesterday) {
-        let lifeTimeFollowers = 0;
         return this.find({
           date: args.input.dimension.date,
           instance: args.input.dimension.instance,
           externalAccountId: args.input.dimension.externalAccountId,
         }).then((itemData: DataGraphsDataDTO) => {
           if (itemData.metrics.followers) {
-            lifeTimeFollowers = itemData.metrics.followers.lifetime_followers;
-            if (followersData) {
-              followersData.lifetime_followers = lifeTimeFollowers;
-            }
+            followersData.lifetime_followers = itemData.metrics.followers.lifetime_followers;
           }
           return followersData;
         });
