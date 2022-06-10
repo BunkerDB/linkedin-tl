@@ -51,7 +51,8 @@ export class DataGraphFollowersStatisticsMongoAdapter
           externalAccountId: args.input.dimension.externalAccountId,
         }).then((itemData: DataGraphsDataDTO) => {
           if (itemData.metrics.followers) {
-            followersData.lifetime_followers = itemData.metrics.followers.lifetime_followers;
+            followersData.lifetime_followers =
+              itemData.metrics.followers.lifetime_followers;
           }
           return followersData;
         });

@@ -12,7 +12,7 @@ export class ServiceCQRSGraphFollowersStatistics {
   private readonly _adapter: IDataGraphsDataDAO;
   private readonly _logger: LoggerInterface;
 
-  constructor(args: { adapter: IDataGraphsDataDAO, logger: LoggerInterface }) {
+  constructor(args: { adapter: IDataGraphsDataDAO; logger: LoggerInterface }) {
     this._adapter = args.adapter;
     this._logger = args.logger;
   }
@@ -72,7 +72,7 @@ export class ServiceCQRSGraphFollowersStatistics {
                 input: todayData as DataGraphsDataCreateInputDTO,
               })
               .catch((err) => {
-                this.logger.error({message: err.message});
+                this.logger.error({ message: err.message });
               });
           }
         });
