@@ -60,7 +60,7 @@ export class ServiceCQRSGraphFollowersStatistics {
             };
             process = true;
           } else if (
-            todayData.metrics.followers != undefined &&
+            todayData.metrics.followers !== undefined &&
             todayData.metrics.followers.lifetime_followers !== rawRow.total
           ) {
             todayData.metrics.followers.lifetime_followers = rawRow.total;
