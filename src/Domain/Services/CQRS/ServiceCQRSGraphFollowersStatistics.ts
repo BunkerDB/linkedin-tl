@@ -50,7 +50,6 @@ export class ServiceCQRSGraphFollowersStatistics {
           date: currentDate,
         })
         .then((todayData: DataGraphsDataDTO) => {
-          let process = false;
           if (todayData.metrics.followers === undefined) {
             todayData.metrics.followers = {
               organic_followers: 0,
@@ -58,24 +57,19 @@ export class ServiceCQRSGraphFollowersStatistics {
               total_followers: 0,
               lifetime_followers: rawRow.total,
             };
-            process = true;
-          } else if (
-            todayData.metrics.followers !== undefined &&
-            todayData.metrics.followers.lifetime_followers !== rawRow.total
-          ) {
+          } else {
             todayData.metrics.followers.lifetime_followers = rawRow.total;
-            process = true;
           }
-          if (process) {
-            this.adapter
+          this.adapter
               .upsert({
                 input: todayData as DataGraphsDataCreateInputDTO,
               })
               .catch((err) => {
                 this.logger.error({ message: err.message });
               });
-          }
-        });
+      }).catch(() => {
+        return;
+      });
     }
 
     return PromiseB.try(() => {
