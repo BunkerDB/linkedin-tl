@@ -61,15 +61,17 @@ export class ServiceCQRSGraphFollowersStatistics {
             todayData.metrics.followers.lifetime_followers = rawRow.total;
           }
           this.adapter
-              .upsert({
-                input: todayData as DataGraphsDataCreateInputDTO,
-              })
-              .catch((err) => {
-                this.logger.error({ message: err.message });
-              });
-      }).catch(() => {
-        return;
-      });
+            .upsert({
+              input: todayData as DataGraphsDataCreateInputDTO,
+            })
+            .catch((err: Error) => {
+              this.logger.error({ message: err.message });
+            });
+        })
+        .catch((err: Error) => {
+          this.logger.error({ message: err.message });
+          return;
+        });
     }
 
     return PromiseB.try(() => {

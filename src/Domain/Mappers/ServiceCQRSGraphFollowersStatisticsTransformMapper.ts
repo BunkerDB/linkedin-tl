@@ -14,7 +14,7 @@ export class ServiceCQRSGraphFollowersStatisticsTransformMapper {
     externalAccountId: number;
     rawRow: FollowersRawDataAllInElementsDTO;
   }): PromiseB<DataGraphsDataCreateInputDTO> {
-    let lifeTimeValue: number = 0;
+    let lifeTimeValue = 0;
     const actionTransformDimension: PromiseB<DataGraphsDataDimensionDTO> =
       this.transformDimension({
         instance: args.instance,
@@ -22,7 +22,10 @@ export class ServiceCQRSGraphFollowersStatisticsTransformMapper {
         rawRow: args.rawRow,
       });
 
-    if(moment(args.rawRow.timeRange?.start).format("YYYY-MM-DD") === moment().utc(false).subtract(1, "day").format("YYYY-MM-DD")){
+    if (
+      moment(args.rawRow.timeRange?.start).format("YYYY-MM-DD") ===
+      moment().utc(false).subtract(1, "day").format("YYYY-MM-DD")
+    ) {
       lifeTimeValue = args.rawRow.total ?? 0;
     }
 

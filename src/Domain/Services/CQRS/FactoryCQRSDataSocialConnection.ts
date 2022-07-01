@@ -92,7 +92,7 @@ export class FactoryCQRSDataSocialConnection {
             adapter: new DataGraphFollowersStatisticsDAO({
               adapter: this.container.get(IoC.IDataGraphFollowersStatisticsDAO),
             }),
-            logger: this.container.get(IoC.LoggerInterface)
+            logger: this.container.get(IoC.LoggerInterface),
           }).execute({
             rawRow: args.rawData,
           });
