@@ -14,15 +14,24 @@ export class ServiceCQRSGraphFollowersStatisticsTransformMapper {
     externalAccountId: number;
     rawRow: FollowersRawDataAllInElementsDTO;
   }): PromiseB<DataGraphsDataCreateInputDTO> {
+    let lifeTimeValue = 0;
     const actionTransformDimension: PromiseB<DataGraphsDataDimensionDTO> =
       this.transformDimension({
         instance: args.instance,
         externalAccountId: args.externalAccountId,
         rawRow: args.rawRow,
       });
+
+    if (
+      moment(args.rawRow.timeRange?.start).format("YYYY-MM-DD") ===
+      moment().utc(false).subtract(1, "day").format("YYYY-MM-DD")
+    ) {
+      lifeTimeValue = args.rawRow.total ?? 0;
+    }
+
     const actionTransformMetrics: PromiseB<DataGraphsDataMetricsDTO> =
       this.transformMetrics({
-        lifetimeFollowers: args.rawRow.total ?? 0,
+        lifetimeFollowers: lifeTimeValue,
         rawRow: args.rawRow,
       });
 

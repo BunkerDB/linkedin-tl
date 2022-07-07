@@ -50,7 +50,10 @@ export class DataGraphFollowersStatisticsMongoAdapter
           instance: args.input.dimension.instance,
           externalAccountId: args.input.dimension.externalAccountId,
         }).then((itemData: DataGraphsDataDTO) => {
-          if (itemData.metrics.followers !== undefined && itemData.metrics.followers !== null) {
+          if (
+            itemData.metrics.followers !== undefined &&
+            itemData.metrics.followers !== null
+          ) {
             followersData.lifetime_followers =
               itemData.metrics.followers.lifetime_followers;
           }
