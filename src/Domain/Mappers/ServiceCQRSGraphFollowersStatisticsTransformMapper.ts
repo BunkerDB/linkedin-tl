@@ -76,8 +76,6 @@ export class ServiceCQRSGraphFollowersStatisticsTransformMapper {
         args.rawRow.followerGains?.organicFollowerGain ?? 0;
       const paidFollowers: number =
         args.rawRow.followerGains?.paidFollowerGain ?? 0;
-      console.info("lifetimeFollowers");
-      console.info(args.lifetimeFollowers);
       return {
         organic_followers: organicFollowers,
         paid_followers: paidFollowers,
