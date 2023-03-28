@@ -1,0 +1,34 @@
+{
+  "apps": [
+    {
+      "name": "linkedin-tl-web",
+      "script": "dist/index.js",
+      "exec_mode": "fork",
+      "instances": 1,
+      "out_file": "~/.pm2/logs/linkedin-tl-web_out.log",
+      "error_file": "~/.pm2/logs/linkedin-tl-web_error.log",
+      "combine_logs": true,
+      "merge_logs": true
+    },
+    {
+      "name": "linkedin-tl-task-00",
+      "script": "dist/Application/EventHandler/Task00/handler.js",
+      "exec_mode": "fork",
+      "instances": 1,
+      "out_file": "~/.pm2/logs/linkedin-tl-tasks_00_out.log",
+      "error_file": "~/.pm2/logs/linkedin-tl-tasks_00_error.log",
+      "combine_logs": true,
+      "merge_logs": true
+    },
+    {
+      "name": "linkedin-tl-task-dimensions",
+      "script": "dist/Application/EventHandler/TaskDimensions/handler.js",
+      "exec_mode": "fork",
+      "instances": 1,
+      "out_file": "~/.pm2/logs/linkedin-tl-tasks_dimensions_out.log",
+      "error_file": "~/.pm2/logs/linkedin-tl-tasks_dimensions_error.log",
+      "combine_logs": true,
+      "merge_logs": true
+    }
+  ]
+}
