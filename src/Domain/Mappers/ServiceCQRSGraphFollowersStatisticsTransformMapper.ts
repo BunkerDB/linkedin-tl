@@ -23,8 +23,11 @@ export class ServiceCQRSGraphFollowersStatisticsTransformMapper {
       });
 
     if (
-      moment(args.rawRow.timeRange?.start).format("YYYY-MM-DD") ===
-      moment().utc(false).subtract(1, "day").format("YYYY-MM-DD")
+      (moment(args.rawRow.timeRange?.end).format("YYYY-MM-DD") ===
+      moment().utc(false).subtract(1, "day").format("YYYY-MM-DD"))
+        ||
+        (moment(args.rawRow.timeRange?.end).format("YYYY-MM-DD") ===
+            moment().utc(false).subtract(2, "day").format("YYYY-MM-DD"))
     ) {
       lifeTimeValue = args.rawRow.total ?? 0;
     }
@@ -73,7 +76,6 @@ export class ServiceCQRSGraphFollowersStatisticsTransformMapper {
         args.rawRow.followerGains?.organicFollowerGain ?? 0;
       const paidFollowers: number =
         args.rawRow.followerGains?.paidFollowerGain ?? 0;
-
       return {
         organic_followers: organicFollowers,
         paid_followers: paidFollowers,
