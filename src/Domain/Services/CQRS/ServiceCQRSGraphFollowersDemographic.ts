@@ -59,7 +59,7 @@ export class ServiceCQRSGraphFollowersDemographic {
           {
             instance: args.rawRow.instance,
             externalAccountId: args.rawRow.organization,
-            totalFollowers: rawRow.total ?? 0,
+            totalFollowers: rawRow.totalFollowers ?? 0,
             dimensions: dimensions,
             rawRow: args.rawRow.data,
             edge: args.rawRow.edge,
