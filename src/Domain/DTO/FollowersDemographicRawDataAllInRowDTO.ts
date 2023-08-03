@@ -17,5 +17,5 @@ export declare type FollowersDemographicRawDataAllInRowDTO = (
   | FollowerCountsByStaffCountRangeDTO
   | FollowerCountsByCountryDTO
 ) & {
-  total: number;
+  totalFollowers: number;
 };
