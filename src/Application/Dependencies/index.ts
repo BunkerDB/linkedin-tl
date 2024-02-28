@@ -66,8 +66,11 @@ const DependenciesManager = (containerBuilder: ContainerBuilder) => {
       value: (container: ContainerInterface) => {
         const settings: SettingsInterface = container.get(IoC.Settings);
         const options: MongoClientOptions = {
-          authSource: "admin",
-          retryWrites: false,
+          w: "majority",
+          retryWrites: true,
+          minPoolSize: 1, //todo put this value in .env
+          maxPoolSize: 3, //todo put this value in .env
+          logger: container.get(IoC.LoggerInterface),
         };
 
         return MongoDBClientDBAL.getInstance({
