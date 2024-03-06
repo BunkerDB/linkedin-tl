@@ -47,7 +47,10 @@ export abstract class GraphsDemographicPeriodTransformMapperBase {
           : args.edge.toLowerCase();
       const dimension: DimensionsDTO | undefined = args.dimensions?.find(
         (dimension) => {
-          return dimension.externalId === args.rawRow[edge];
+          return (
+            dimension.externalId.toLowerCase() ===
+            args.rawRow[edge]?.toString().toLowerCase()
+          );
         }
       );
       if (!dimension) {

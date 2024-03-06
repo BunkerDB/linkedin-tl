@@ -42,7 +42,7 @@ export class ServiceCQRSOrganizationDataTransformMapper {
         args.rawRow.name.preferredLocale.country;
 
       return {
-        externalAccountId: args.rawRow["$URN"],
+        externalAccountId: "urn:li:organization:" + args.rawRow.id,
         name: args.rawRow.name.localized[preferredLocale] ?? "",
         link: linkedInPermalinkEdge + args.rawRow.vanityName,
       };
