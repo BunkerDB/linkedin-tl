@@ -65,18 +65,13 @@ const DependenciesManager = (containerBuilder: ContainerBuilder) => {
       key: IoC.MongoClient,
       value: (container: ContainerInterface) => {
         const settings: SettingsInterface = container.get(IoC.Settings);
-        const options: MongoClientOptions = settings.MONGO_AMAZON
-          ? {
-              tls: true,
-              tlsAllowInvalidHostnames: true,
-              tlsCAFile: `${settings.MONGODB_CERTS_LOCAL_VOLUME}/rds-combined-ca-bundle.pem`,
-              directConnection: true,
-              retryWrites: false,
-            }
-          : {
-              authSource: "admin",
-              retryWrites: false,
-            };
+        const options: MongoClientOptions = {
+          w: "majority",
+          retryWrites: true,
+          minPoolSize: 1, //todo put this value in .env
+          maxPoolSize: 3, //todo put this value in .env
+          logger: container.get(IoC.LoggerInterface),
+        };
 
         return MongoDBClientDBAL.getInstance({
           dsn: settings.MONGODB_DSN + settings.MONGODB_DATABASE,

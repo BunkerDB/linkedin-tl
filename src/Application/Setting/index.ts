@@ -5,11 +5,9 @@ import { IoC } from "../Dependencies";
 import { ContainerInterface } from "../Interface/ContainerInterface";
 
 export interface SettingsInterface {
-  MONGO_AMAZON: boolean;
   SERVER_PORT: number;
   MONGODB_DSN: string;
   MONGODB_DATABASE: string;
-  MONGODB_CERTS_LOCAL_VOLUME: string;
   KAFKA_CLIENT_ID: string;
   KAFKA_LOGLEVEL: number;
   KAFKA_ADVERTISED_HOST_NAME: string;
@@ -30,11 +28,9 @@ const SettingsManager = (containerBuilder: ContainerBuilderInterface) => {
   }
 
   const schemaSettings = Joi.object({
-    MONGO_AMAZON: Joi.boolean().required().default(true),
     SERVER_PORT: Joi.number().required(),
     MONGODB_DSN: Joi.string().required(),
     MONGODB_DATABASE: Joi.string().required().default("db_linkedin"),
-    MONGODB_CERTS_LOCAL_VOLUME: Joi.string().required(),
     KAFKA_CLIENT_ID: Joi.string().required(),
     KAFKA_ADVERTISED_HOST_NAME: Joi.string().required(),
     KAFKA_LOGLEVEL: Joi.number().required().min(0).max(5),
@@ -58,11 +54,9 @@ const SettingsManager = (containerBuilder: ContainerBuilderInterface) => {
   });
 
   const validationResult: ValidationResult = schemaSettings.validate({
-    MONGO_AMAZON: process.env.MONGO_AMAZON,
     SERVER_PORT: process.env.SERVER_PORT,
     MONGODB_DSN: process.env.MONGODB_DSN,
     MONGODB_DATABASE: process.env.MONGODB_DATABASE,
-    MONGODB_CERTS_LOCAL_VOLUME: process.env.MONGODB_CERTS_LOCAL_VOLUME,
     KAFKA_CLIENT_ID: process.env.KAFKA_CLIENT_ID,
     KAFKA_ADVERTISED_HOST_NAME: process.env.KAFKA_ADVERTISED_HOST_NAME,
     KAFKA_LOGLEVEL: process.env.KAFKA_LOGLEVEL,
